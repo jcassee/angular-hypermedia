@@ -1,0 +1,15 @@
+{
+  "globalstrict": true,
+  "browser": true,
+  "jasmine": true,
+  "browserify": true,
+  "globals": {
+    "Dexie": false,
+    "UriTemplate": false,
+    "angular": false,
+    "module": false,
+    "inject": false,
+    "linkHeaderParser": false,
+    "mediaTypeParser": false
+  }
+}

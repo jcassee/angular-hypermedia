@@ -1,0 +1,28 @@
+{
+  "name": "angular-hypermedia",
+  "version": "0.1.0",
+  "description": "Hypermedia REST API client for AngularJS applications",
+  "repository": "https://github.com/jcassee/angular-hypermedia",
+  "license": "MIT",
+  "devDependencies": {
+    "bower": "^1.4",
+    "coveralls": "^2.11",
+    "gulp": "^3.9",
+    "gulp-batch": "^1.0",
+    "gulp-concat": "^2.6",
+    "gulp-ignore": "^1.2",
+    "gulp-watch": "^4.3",
+    "jshint": "^2.8",
+    "karma": "^0.13",
+    "karma-coverage": "^0.4",
+    "karma-jasmine": "^0.3",
+    "karma-phantomjs-launcher": "^0.2"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "pretest": "jshint src",
+    "test": "karma start karma.conf.js  --single-run",
+    "posttest": "[ x$TRAVIS = x ] || ( cat build/coverage/lcov.info | coveralls )",
+    "prepublish": "gulp"
+  }
+}
