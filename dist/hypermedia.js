@@ -7,7 +7,7 @@
  *
  * This module contains classes and services to work with hypermedia APIs.
  */
-angular.module('hypermedia', ['netstatus']);
+angular.module('hypermedia', []);
 
 'use strict';
 
@@ -37,7 +37,7 @@ angular.module('hypermedia')
        *
        * @type {Blob}
        */
-      instance.data = new Blob();
+      instance.data = '';
 
       return instance;
     }
@@ -164,7 +164,7 @@ angular.module('hypermedia')
           // Convert media type profile to profile link
           var mediaType = mediaTypeParser.parse(response.headers('Content-Type'));
           if (!('profile' in links) && 'profile' in mediaType.params) {
-            links.profile = mediaType.params.profile;
+            links.profile = {href: mediaType.params.profile};
           }
 
           var updatedResources = resource.$update(response.data, links);
@@ -357,10 +357,11 @@ angular.module('hypermedia')
        * @returns all updated resources
        */
       $update: {value: function (data, links) {
+        links = links || {};
         var selfHref = ((data._links || {}).self || {}).href;
         if (!selfHref) selfHref = (links.self || {}).href;
         if (selfHref != this.$uri) {
-          throw new Error("Self link href differs: expected '" + this.$uri + "', was '" + selfHref + "'");
+          throw new Error("Self link href differs: expected '" + this.$uri + "', was " + angular.toJson(selfHref));
         }
 
         return extractAndUpdateResources(data, links, this.$context);
@@ -381,7 +382,6 @@ angular.module('hypermedia')
       var resources = [];
 
       // Extract links
-      links = links || {};
       angular.extend(links, data._links);
       delete data._links;
 
@@ -397,7 +397,7 @@ angular.module('hypermedia')
         }
         // Recurse into embedded resource
         forArray(embeds, function (embedded) {
-          resources = resources.concat(extractAndUpdateResources(embedded, null, context));
+          resources = resources.concat(extractAndUpdateResources(embedded, {}, context));
         });
       });
       delete data._embedded;
@@ -408,22 +408,6 @@ angular.module('hypermedia')
       resources.push(resource);
 
       return resources;
-    }
-
-    function addMissingLink(links, rel, uri) {
-      var newValue = {href: uri};
-      if (rel in links) {
-        var currentValues = Array.isArray(links[rel]) ? links[rel] : [links[rel]];
-        var missing = currentValues.every(function (value) {
-          return value.href !== uri;
-        });
-        if (missing) {
-          links[rel] = currentValues;
-          links[rel].push(newValue);
-        }
-      } else {
-        links[rel] = newValue;
-      }
     }
   }])
 
@@ -563,8 +547,8 @@ angular.module('hypermedia')
        */
       $propRel: {value: function (prop, vars, factory) {
         if (angular.isFunction(vars)) {
-          vars = undefined;
           factory = vars;
+          vars = undefined;
         }
         return forArray(this.$propHref(prop, vars), function (uri) {
           return this.$context.get(uri, factory);
@@ -619,8 +603,8 @@ angular.module('hypermedia')
        */
       $linkRel: {value: function (rel, vars, factory) {
         if (angular.isFunction(vars)) {
-          vars = undefined;
           factory = vars;
+          vars = undefined;
         }
         return forArray(this.$linkHref(rel, vars), function (uri) {
           return this.$context.get(uri, factory);
@@ -700,7 +684,7 @@ angular.module('hypermedia')
         return {
           method: 'get',
           url: this.$uri,
-          headers: {'Accept': 'application/hal+json'}
+          headers: {'Accept': 'application/json'}
         };
       }},
 
@@ -804,6 +788,12 @@ angular.module('hypermedia')
        * @returns the resource
        */
       $update: {value: function (data, links) {
+        links = links || {};
+        if (links.self && links.self.href !== this.$uri) {
+          throw new Error('Self link href differs: expected "' + this.$uri + '", was ' +
+              angular.toJson(links.self.href));
+        }
+
         // Update state
         Object.keys(this).forEach(function (key) {
           delete this[key];
