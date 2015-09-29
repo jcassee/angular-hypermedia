@@ -14,7 +14,7 @@ gulp.task('default', function(){
   return gulp.src('src/*.js')
     .pipe(ignore.exclude('*.spec.js'))
     .pipe(concat(path.basename(dist)))
-    .pipe(gulp.dest(distDir))
+    .pipe(gulp.dest(distDir));
 });
 
 gulp.task('watch', function () {
