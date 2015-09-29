@@ -15,6 +15,11 @@ describe('ResourceContext', function () {
     resource = context.get('http://example.com');
   }));
 
+  afterEach(function() {
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest();
+  });
+
 
   // Tests
 
