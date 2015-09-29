@@ -50,10 +50,11 @@ angular.module('hypermedia')
        * @returns all updated resources
        */
       $update: {value: function (data, links) {
+        links = links || {};
         var selfHref = ((data._links || {}).self || {}).href;
         if (!selfHref) selfHref = (links.self || {}).href;
         if (selfHref != this.$uri) {
-          throw new Error("Self link href differs: expected '" + this.$uri + "', was '" + selfHref + "'");
+          throw new Error("Self link href differs: expected '" + this.$uri + "', was " + angular.toJson(selfHref));
         }
 
         return extractAndUpdateResources(data, links, this.$context);
@@ -74,7 +75,6 @@ angular.module('hypermedia')
       var resources = [];
 
       // Extract links
-      links = links || {};
       angular.extend(links, data._links);
       delete data._links;
 
@@ -90,7 +90,7 @@ angular.module('hypermedia')
         }
         // Recurse into embedded resource
         forArray(embeds, function (embedded) {
-          resources = resources.concat(extractAndUpdateResources(embedded, null, context));
+          resources = resources.concat(extractAndUpdateResources(embedded, {}, context));
         });
       });
       delete data._embedded;
@@ -101,22 +101,6 @@ angular.module('hypermedia')
       resources.push(resource);
 
       return resources;
-    }
-
-    function addMissingLink(links, rel, uri) {
-      var newValue = {href: uri};
-      if (rel in links) {
-        var currentValues = Array.isArray(links[rel]) ? links[rel] : [links[rel]];
-        var missing = currentValues.every(function (value) {
-          return value.href !== uri;
-        });
-        if (missing) {
-          links[rel] = currentValues;
-          links[rel].push(newValue);
-        }
-      } else {
-        links[rel] = newValue;
-      }
     }
   }])
 

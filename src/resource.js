@@ -132,8 +132,8 @@ angular.module('hypermedia')
        */
       $propRel: {value: function (prop, vars, factory) {
         if (angular.isFunction(vars)) {
-          vars = undefined;
           factory = vars;
+          vars = undefined;
         }
         return forArray(this.$propHref(prop, vars), function (uri) {
           return this.$context.get(uri, factory);
@@ -188,8 +188,8 @@ angular.module('hypermedia')
        */
       $linkRel: {value: function (rel, vars, factory) {
         if (angular.isFunction(vars)) {
-          vars = undefined;
           factory = vars;
+          vars = undefined;
         }
         return forArray(this.$linkHref(rel, vars), function (uri) {
           return this.$context.get(uri, factory);
@@ -269,7 +269,7 @@ angular.module('hypermedia')
         return {
           method: 'get',
           url: this.$uri,
-          headers: {'Accept': 'application/hal+json'}
+          headers: {'Accept': 'application/json'}
         };
       }},
 
@@ -373,6 +373,12 @@ angular.module('hypermedia')
        * @returns the resource
        */
       $update: {value: function (data, links) {
+        links = links || {};
+        if (links.self && links.self.href !== this.$uri) {
+          throw new Error('Self link href differs: expected "' + this.$uri + '", was ' +
+              angular.toJson(links.self.href));
+        }
+
         // Update state
         Object.keys(this).forEach(function (key) {
           delete this[key];

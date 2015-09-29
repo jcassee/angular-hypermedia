@@ -26,7 +26,7 @@ angular.module('hypermedia')
        *
        * @type {Blob}
        */
-      instance.data = new Blob();
+      instance.data = '';
 
       return instance;
     }

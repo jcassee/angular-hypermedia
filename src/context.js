@@ -77,7 +77,7 @@ angular.module('hypermedia')
           // Convert media type profile to profile link
           var mediaType = mediaTypeParser.parse(response.headers('Content-Type'));
           if (!('profile' in links) && 'profile' in mediaType.params) {
-            links.profile = mediaType.params.profile;
+            links.profile = {href: mediaType.params.profile};
           }
 
           var updatedResources = resource.$update(response.data, links);
