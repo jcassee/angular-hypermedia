@@ -5,6 +5,10 @@ A hypermedia client for AngularJS applications. Supports relations in HTTP
 [JSON HAL](http://tools.ietf.org/html/draft-kelly-json-hal), and resource
 [profiles](http://tools.ietf.org/html/rfc6906).
 
+An extension module
+[angular-hypermedia-offline](https://github.com/jcassee/angular-hypermedia-offline)
+is available that adds offline caching of resources.
+
 
 ## Quickstart
 
