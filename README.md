@@ -10,6 +10,17 @@ An extension module
 is available that adds offline caching of resources.
 
 
+## Installation
+
+Install using Bower.
+
+    bower install angular-hypermedia
+    
+Then include it in your HTML page.
+
+    <script src="bower_components/angular-hypermedia/dist/hypermedia.js"></script>
+
+
 ## Quickstart
 
     angular.module('myApp', ['hypermedia'])
