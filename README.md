@@ -1,5 +1,11 @@
 # Hypermedia REST API client for AngularJS applications
 
+[![Build Status](https://travis-ci.org/jcassee/angular-hypermedia.svg?branch=master)](https://travis-ci.org/jcassee/angular-hypermedia)
+[![Coverage Status](https://coveralls.io/repos/jcassee/angular-hypermedia/badge.svg?branch=master&service=github)](https://coveralls.io/github/jcassee/angular-hypermedia?branch=master)
+[![Bower](https://img.shields.io/bower/v/angular-hypermedia.svg)](http://bower.io/search/?q=angular-hypermedia) 
+[![License](https://img.shields.io/github/license/jcassee/angular-hypermedia.svg)](https://github.com/jcassee/angular-hypermedia/blob/master/LICENSE.md)
+
+
 A hypermedia client for AngularJS applications. Supports relations in HTTP
 [Link headers](http://tools.ietf.org/html/rfc5988), JSON properties and
 [JSON HAL](http://tools.ietf.org/html/draft-kelly-json-hal), and resource
@@ -90,10 +96,8 @@ HTTP requests. In this way, it is similar to a AngularJS `$resource` instance.
 
 **Example:**
 
-    var context, composer;
-
-    context = new ResourceContext();
-    composer = context.get('http://example.com/composer/john');
+    var context = new ResourceContext();
+    var composer = context.get('http://example.com/composer/john');
     expect(composer.$uri).toBe('http://example.com/composer/john');
 
 The context acts like an identity map, in the sense that calling `context.get`
@@ -103,9 +107,7 @@ If a subclass of `Resource` is required, a second argument may be used.
 
 **Example:**
 
-    var movie;
-    
-    movie = context.get('http://example.com/movie/jaws', HalResource);
+    var movie = context.get('http://example.com/movie/jaws', HalResource);
 
 If you are using an API that is based on a media type for which a Resource
 subclass exists (JSON HAL, for example) it is useful to create a context with a
@@ -113,10 +115,8 @@ default factory.
 
 **Example:**
 
-    var context2, movie2;
-    
-    context2 = new ResourceContext(HalResource);
-    movie2 = context.get('http://example.com/movie/jaws');
+    var context2 = new ResourceContext(HalResource);
+    var movie2 = context.get('http://example.com/movie/jaws');
 
 
 ## GET, PUT, DELETE requests: synchronization
@@ -178,20 +178,16 @@ value is an array of URIs then an array of resources is returned.
 
 **Example:**
 
-    var car, friends;
-
-    car = composer.$propRel('carHref');
-    friends = composer.$propRel('friendHrefs');
+    var car = composer.$propRel('carHref');
+    var friends = composer.$propRel('friendHrefs');
     
 If the target resource is not created using the default context factory, you can
 add the factory as the last parameter.
 
 **Example:**
 
-    var manufacturer;
-
     car.manufacturerHref = 'http://example.com/hal/companies/mercedes';
-    manufacturer = car.$propRel('manufacturerHref', HalResource)
+    var manufacturer = car.$propRel('manufacturerHref', HalResource)
 
 
 ## URI Templates
@@ -203,19 +199,15 @@ reference.
 
 **Example:**
 
-    var todaysAppointments;
-
     composer.appointmentsHref = 'http://example.com/appointments/john/{date}'
-    todaysAppointments = composer.$propRel('appointmentsHref', {date: '2015-03-05'});
+    var todaysAppointments = composer.$propRel('appointmentsHref', {date: '2015-03-05'});
 
 URI Template variables and resource factory can be specified at the same time.
 
 **Example:**
 
-    var currentModels;
-    
     manufacturer.modelsHref = 'http://example.com/hal/companies/mercedes/models{?discontinued}'
-    currentModels = manufacturer.$propRel('modelsHref', {discontinued: false}, HalResource);
+    var currentModels = manufacturer.$propRel('modelsHref', {discontinued: false}, HalResource);
 
 
 ## Links
@@ -368,9 +360,7 @@ properties are then deleted.
 
 **Example:**
 
-    var root;
-    
-    root = new ResourceContext(HalResource).get('http://example.com/hal');
+    var root = new ResourceContext(HalResource).get('http://example.com/hal');
     root.$loadPaths({
       'ex:manufacturers': {
         'items': {
