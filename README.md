@@ -34,8 +34,7 @@ is available that adds offline caching of resources.
           controller: 'ComposersController',
           resolve: {
             composers: function (ResourceContext) {
-              var context = new ResourceContext();
-              return context.get('http://example.com/composers').$loadPaths({
+              return new ResourceContext().get('http://example.com/composers').$loadPaths({
                 car: {},
                 friends: {
                   car: {}
@@ -158,13 +157,13 @@ Note: a relation can be a string or an array of string.
 
     composer.carHref = 'http://example.com/car/mercedes-sedan';
     composer.friendHrefs = [
-      'http://example.com/composer/george',
-      'http://example.com/composer/steven'
+      'http://example.com/director/george',
+      'http://example.com/director/steven'
     ];
 
 Of course, it is possible to look up URIs in the context, but `Resource` has the
 convenience method `$propRel` for getting related resources. If the property
-value is an array or URIs then an array of resources is returned.
+value is an array of URIs then an array of resources is returned.
 
 **Example:**
 
@@ -215,8 +214,8 @@ links. Links are returned by the server as
 [Link headers](http://tools.ietf.org/html/rfc5988).
 
 The `$links` property is a mapping of relations to link objects. A link object
-has an `href` property containing the relation target URI and any other link
-attributes. Often used attributes are listed in the RFC.
+has an `href` property containing the relation target URI. Other properties are
+link attributes as listed in the [RFC](http://tools.ietf.org/html/rfc5988).
 
 Relations are either keywords from the 
 [IANA list](http://www.iana.org/assignments/link-relations/link-relations.xhtml)
@@ -241,27 +240,29 @@ the `$linkRel` method.
 ## Profiles
 
 Resources can often be said to be of a certain type, in the sense that in the
-examples, `http://example.com/composer/john` "is a composer". This is called a
-[profile](http://tools.ietf.org/html/rfc6906). Profiles are identified by a URI.
-(As with relations, they may double as a pointer to the profile documentation.)
-Resources have a `$profile` property containing the profile URI. 
+examples, the resource referenced by `http://example.com/composer/john` "is a
+composer". This is called a [profile](http://tools.ietf.org/html/rfc6906).
+Profiles are identified by a URI. (As with relations, they may double as a
+pointer to the profile documentation.) Resources have a `$profile` property
+containing the profile URI. 
 
 It is possible to add functionality to resources of specific profiles by
 registering properties. Setting `$profile` immediately applies the properties
-registered with that profile. They are set on a per-resource prototype, so that
-they do not interfere with the resource data and are removed when the profile is
-removed.
+registered with that profile. (The properties are set on a per-resource
+prototype, so they do not interfere with the resource data and are removed when
+the profile is removed.
 
 Note: if using an array, adding profiles to the array after setting `$profile`
 will not update the properties.
 
 Profiles are registered using `Resource.registerProfile(profile, properties)`
-or `Resource.registerProfiles(profileProperties)`.
+or `Resource.registerProfiles(profileProperties)`. Properties are applied to
+resources using `Object.defineProperties`.
 
 **Example:**
 
     Resource.registerProfiles({
-      'http://example.com/profiles/composer': {
+      'http://example.com/profiles/person': {
         fullName: {get: function () {
           return this.firstName + ' ' + this.lastName;
         }},
@@ -272,7 +273,7 @@ or `Resource.registerProfiles(profileProperties)`.
       }
     });
 
-    composer.$profile = 'http://example.com/profiles/composer';
+    composer.$profile = 'http://example.com/profiles/person';
     
     expect(composer.fullName).toBe('John Williams');
     expect(composer.car.brand).toBe('Mercedes');
@@ -293,7 +294,7 @@ the resource was not already synchronized with the server.
 
     $q.when(friends.map(function (friend) {
       return friend.$propRel('carHref').$load();
-    })).then(function (cars) {
+    })).then(function () {
       friends.forEach(function (friend) {
         console.log(friend.fullName + ' owns a ' + friend.car.brand);
       });
@@ -304,8 +305,8 @@ needed to render the template has been loaded. Often, this means loading all
 resources that are reached by following a specific path through the resource
 relations. The `$loadPaths` method loads all resources reached by follow
 relation paths. The argument is a nested object hierarchy where the keys
-represent either link or property relations, or computed properties that return
-other resources directly (such as the `car` profile property in the examples).
+represent link or property relations, or computed properties that return other
+resources directly (such as the `car` profile property in the examples).
 
 **Example:**
 
@@ -353,6 +354,24 @@ not application state.
 On GET requests, links are copied from the `_links` property and embedded
 resources are extracted from `_embedded` and added to the context. Both
 properties are then deleted.
+
+**Example:**
+
+    var root;
+    
+    root = new ResourceContext(HalResource).get('http://example.com/hal');
+    root.$loadPaths({
+      'ex:manufacturers': {
+        'items': {
+          'ex:models: {
+            'items': {}
+          },
+          'ex:subsidiaries': {
+            'items': {}
+          }
+        }
+      }
+    });
 
 
 ## Blob resources
