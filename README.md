@@ -20,54 +20,58 @@ is available that adds offline caching of resources.
 
 Install using Bower.
 
-    bower install angular-hypermedia
+    bower install angular-hypermedia --save
     
-Then include it in your HTML page.
+Then include it (and its dependencies) in your HTML page.
 
     <script src="bower_components/angular-hypermedia/dist/hypermedia.js"></script>
+    <script src="bower_components/linkheader-parser/dist/linkheader-parser-browser.js"></script>
+    <script src="bower_components/mediatype-parser/dist/mediatype-parser-browser.js"></script>
+    <script src="bower_components/uri-templates/uri-templates.js"></script>
 
 
 ## Quickstart
 
-    angular.module('myApp', ['hypermedia'])
+Consider a controller that lists all GitHub notifications for the current user.
+It can use the `next` and `prev` links provided by the GitHub API for
+pagination.
 
-      // Register profile properties
-      .run(function (Resource) {
-        Resource.registerProfile('http://example.com/profiles/composer': {
-          fullName: {get: function () {
-            return this.firstName + ' ' + this.lastName;
-          }},
-          
-          car: {get: function () {
-            return this.propRel('carHref');
-          }}
+This could be an implementation of the controller:
+
+    angular.module('myGitHubBrowser', ['hypermedia'])
+
+      .controller('NotificationsController', function (ResourceContext) {
+        $scope.page = null;
+
+        new ResourceContext().get('https://api.github.com/notifications').then(function (page) {
+          $scope.page = page;
         });
-      })
-      
-      // Load all required resources during the route resolve phase
-      .config(function($routeProvider) {
-        $routeProvider.when('/composers', {
-          templateUrl: 'composers.html',
-          controller: 'ComposersController',
-          resolve: {
-            composers: function (ResourceContext) {
-              return new ResourceContext().get('http://example.com/composers').$loadPaths({
-                car: {},
-                friends: {
-                  car: {}
-                }
-              });
-            }
-          }
-        });
+
+        $scope.followRel = function (rel) {
+          $scope.page.$linkRel(rel).then(function (page) {
+            $scope.page = page;
+          })
+        };
+
+        $scope.hasRel = function (rel) {
+          return rel in $scope.page.$links;
+        };
       });
 
-      // Set the resource on the scope
-      .factory('ComposerController', function (composers) {
-        $scope.composers = composers;
-      })
+The accompanying HTML template:
 
-    ;
+    <div>
+      <!-- List the notifications on the current page -->
+
+      <ul class="pagination">
+        <li>
+          <a ng-click="{{ followRel('prev') }}" ng-class="{disabled: !hasRel('prev')}">&laquo;</a>
+        </li>
+        <li>
+          <a ng-click="{{ followRel('next') }}" ng-class="{disabled: !hasRel('next')}">&raquo;</a>
+        </li>
+      </ul>
+    </div>
 
 
 ## Provided services
@@ -97,8 +101,8 @@ HTTP requests. In this way, it is similar to a AngularJS `$resource` instance.
 **Example:**
 
     var context = new ResourceContext();
-    var composer = context.get('http://example.com/composer/john');
-    expect(composer.$uri).toBe('http://example.com/composer/john');
+    var person = context.get('http://example.com/composer/john');
+    expect(person.$uri).toBe('http://example.com/composer/john');
 
 The context acts like an identity map, in the sense that calling `context.get`
 with the same URI returns the same `Resource` object.
@@ -130,13 +134,13 @@ completes successfully.
 
 **Example:**
 
-    composer.$get().then(function () {
+    context.get('http://example.com/composer/john').$get().then(function (composer) {
       expect(composer.firstName).toBe('John');
       expect(composer.lastName).toBe('Williams');
     });
 
-    composer.email = 'john@example.com';
-    composer.$put().then(function () {
+    person.email = 'john@example.com';
+    person.$put().then(function () {
       console.log('success!');
     });
 
@@ -150,7 +154,7 @@ as arguments the data to be sent in the body and a mapping of headers.
 
 **Example:**
 
-    composer.$post({password: 'secret'}, {'Content-Type': 'text/plain'}).then(function () {
+    person.$post({password: 'secret'}, {'Content-Type': 'text/plain'}).then(function () {
       console.log('password changed');
     });
 
@@ -166,8 +170,8 @@ Note: a relation can be a string or an array of string.
 
 **Example:**
 
-    composer.carHref = 'http://example.com/car/mercedes-sedan';
-    composer.friendHrefs = [
+    person.carHref = 'http://example.com/car/mercedes-sedan';
+    person.friendHrefs = [
       'http://example.com/director/george',
       'http://example.com/director/steven'
     ];
@@ -178,8 +182,8 @@ value is an array of URIs then an array of resources is returned.
 
 **Example:**
 
-    var car = composer.$propRel('carHref');
-    var friends = composer.$propRel('friendHrefs');
+    var car = person.$propRel('carHref');
+    var friends = person.$propRel('friendHrefs');
     
 If the target resource is not created using the default context factory, you can
 add the factory as the last parameter.
@@ -194,20 +198,20 @@ add the factory as the last parameter.
 
 A reference can also be a [URI Template](http://tools.ietf.org/html/rfc6570),
 containing paramaters that need to be substituted before it can be resolved. The
-`$propRel` accepts a second argument of variables to resolve a URI Template
-reference.
+`$propRel` accepts a second argument of variables (a mapping name -> value) to
+resolve a URI Template reference.
 
 **Example:**
 
-    composer.appointmentsHref = 'http://example.com/appointments/john/{date}'
-    var todaysAppointments = composer.$propRel('appointmentsHref', {date: '2015-03-05'});
+    person.appointmentsHref = 'http://example.com/appointments/john/{date}'
+    var todaysAppointments = person.$propRel('appointmentsHref', {date: '2015-03-05'});
 
 URI Template variables and resource factory can be specified at the same time.
 
 **Example:**
 
-    manufacturer.modelsHref = 'http://example.com/hal/companies/mercedes/models{?discontinued}'
-    var currentModels = manufacturer.$propRel('modelsHref', {discontinued: false}, HalResource);
+    manufacturer.modelsHref = 'http://example.com/hal/companies/mercedes/models{?current}'
+    var currentModels = manufacturer.$propRel('modelsHref', {current: true}, HalResource);
 
 
 ## Links
@@ -237,14 +241,14 @@ the `$linkRel` method.
 
 **Example:**
 
-    expect(car.$linkRel('http://example.com/rels/owner')).toBe(composer);
+    expect(car.$linkRel('http://example.com/rels/owner')).toBe(person);
 
 
 ## Profiles
 
 Resources can often be said to be of a certain type, in the sense that in the
 examples, the resource referenced by `http://example.com/composer/john` "is a
-composer". This is called a [profile](http://tools.ietf.org/html/rfc6906).
+person". This is called a [profile](http://tools.ietf.org/html/rfc6906).
 Profiles are identified by a URI. (As with relations, they may double as a
 pointer to the profile documentation.) Resources have a `$profile` property
 containing the profile URI. 
@@ -276,10 +280,10 @@ resources using `Object.defineProperties`.
       }
     });
 
-    composer.$profile = 'http://example.com/profiles/person';
+    person.$profile = 'http://example.com/profiles/person';
     
-    expect(composer.fullName).toBe('John Williams');
-    expect(composer.car.brand).toBe('Mercedes');
+    expect(person.fullName).toBe('John Williams');
+    expect(person.car.brand).toBe('Mercedes');
 
 The profile is automatically set if the response of a GET request contains
 either a profile Link header or the profile parameter in the Content-Type
@@ -313,7 +317,7 @@ resources directly (such as the `car` profile property in the examples).
 
 **Example:**
 
-    composer.$loadPaths({
+    person.$loadPaths({
       car: {},
       friendHrefs: {
         car: {}
@@ -382,7 +386,7 @@ the server will be stored as a `Blob` in the `data` property of the object.
 
 **Example:**
 
-    composer.profilePhotoHref = 'http://example.com/photos/johnwilliams.jpg';
-    composer.$propRel('profilePhotoHref', BlobResource).$load().then(function (photo) {
+    person.profilePhotoHref = 'http://example.com/photos/johnwilliams.jpg';
+    person.$propRel('profilePhotoHref', BlobResource).$load().then(function (photo) {
       $scope.photoImgSrc = $window.URL.createObjectURL(resource.data);
     });
