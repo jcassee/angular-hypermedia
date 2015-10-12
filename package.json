@@ -12,10 +12,11 @@
     "gulp-concat": "^2.6",
     "gulp-ignore": "^1.2",
     "gulp-watch": "^4.3",
+    "jasmine-core": "^2.3.4",
     "jshint": "^2.8",
     "karma": "^0.13",
     "karma-coverage": "^0.4",
-    "karma-jasmine": "^0.3",
+    "karma-jasmine": "^0.3.6",
     "karma-phantomjs-launcher": "^0.2"
   },
   "scripts": {
