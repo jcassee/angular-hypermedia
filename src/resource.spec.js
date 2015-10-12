@@ -290,7 +290,7 @@ describe('Resource', function () {
       url: 'http://example.com',
       data: data,
       headers: {'Content-Type': 'application/json'}
-    })
+    });
   });
 
   it('delegates HTTP PATCH request to the context', function () {

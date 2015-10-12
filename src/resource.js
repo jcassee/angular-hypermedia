@@ -442,7 +442,7 @@ angular.module('hypermedia')
             self[key] = data[key];
           }
           return self;
-        })
+        });
       }}
     });
 
