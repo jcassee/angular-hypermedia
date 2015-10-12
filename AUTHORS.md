@@ -1,6 +1,10 @@
 # Authors
 
-* Joost Cassee
+* [Joost Cassee](https://github.com/jcassee)
 
 This project was started at the Human Environment and Transport Inspectorate of
 the Dutch Ministry of Infrastructure and Environment.
+
+The example from the README was gratefully adapted from the
+[angular-hy-res](https://github.com/petejohanson/angular-hy-res) project by
+[Pete Johanson](https://github.com/petejohanson).

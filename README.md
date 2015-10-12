@@ -299,12 +299,9 @@ the resource was not already synchronized with the server.
 
 **Example:**
 
-    $q.when(friends.map(function (friend) {
-      return friend.$propRel('carHref').$load();
-    })).then(function () {
-      friends.forEach(function (friend) {
-        console.log(friend.fullName + ' owns a ' + friend.car.brand);
-      });
+    person.$links['http://example.com/rels/artistic-works'] = 'http://example.com/composers/john/works'
+    person.$linkRel('http://example.com/rels/artistic-works').$load().then(function (works) {
+      console.log("John's works: " + compositions.map(function (work) { return work.title; }).join(', '));
     });
 
 When using resources in Angular views, it is important that all information
