@@ -75,6 +75,18 @@ describe('ResourceContext', function () {
     expect(resource.$syncTime / 10).toBeCloseTo(Date.now() / 10, 0);
   });
 
+  it('performs HTTP PATCH requests', function () {
+    var promiseResult = null;
+    var data = {};
+    context.httpPatch(resource, data).then(function (result) { promiseResult = result; });
+    $httpBackend.expectPATCH(resource.$uri, data,
+          {'Accept': 'application/json, text/plain, */*', 'Content-Type': 'application/json'})
+        .respond(204);
+    $httpBackend.flush();
+    expect(promiseResult).toBe(resource);
+    expect(resource.$syncTime / 10).toBeCloseTo(Date.now() / 10, 0);
+  });
+
   it('performs HTTP DELETE requests', function () {
     var promiseResult = null;
     resource.$syncTime = 1;

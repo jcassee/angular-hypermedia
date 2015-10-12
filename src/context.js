@@ -118,10 +118,10 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$patchRequest
        */
-      httpPatch: {value: function (resource) {
+      httpPatch: {value: function (resource, data) {
         var self = this;
         busyRequests += 1;
-        var request = updateHttp(resource.$patchRequest());
+        var request = updateHttp(resource.$patchRequest(data));
         return $http(request).then(function () {
           Resource.prototype.$merge.call(resource, request.data);
           return self.markSynced(resource, Date.now());
