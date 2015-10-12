@@ -436,7 +436,7 @@ angular.module('hypermedia')
       $merge: {value: function (data){
         var self = this;
         Object.keys(data).forEach(function(key){
-          if (key in self && data[key] === null) {
+          if (data[key] === null) {
             delete self[key];
           } else {
             self[key] = data[key];
