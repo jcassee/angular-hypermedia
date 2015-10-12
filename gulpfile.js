@@ -4,6 +4,8 @@ var gulp = require('gulp'),
   batch  = require('gulp-batch'),
   concat = require('gulp-concat'),
   ignore = require('gulp-ignore'),
+  gulpIf = require('gulp-if'),
+  jshint = require('gulp-jshint'),
   watch  = require('gulp-watch'),
   path   = require('path');
 
@@ -22,4 +24,11 @@ gulp.task('watch', function () {
   watch('src/**', batch(function (events, done) {
     gulp.start('default', done);
   }));
+});
+
+gulp.task('jshint', function () {
+  return gulp.src(['src/*.js'])
+    .pipe(jshint('./.jshintrc'))
+    .pipe(jshint.reporter('jshint-stylish'))
+    .pipe(jshint.reporter('fail'));
 });
