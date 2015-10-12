@@ -12,7 +12,7 @@ describe('Resource', function () {
     $q = _$q_;
     $rootScope = _$rootScope_;
     Resource = _Resource_;
-    mockContext = jasmine.createSpyObj('mockContext', ['get', 'httpGet', 'httpPut', 'httpDelete', 'httpPost']);
+    mockContext = jasmine.createSpyObj('mockContext', ['get', 'httpGet', 'httpPut', 'httpDelete', 'httpPost', 'httpPatch']);
     uri = 'http://example.com';
     resource = new Resource(uri, mockContext);
   }));
@@ -283,6 +283,21 @@ describe('Resource', function () {
     expect(mockContext.httpPut).toHaveBeenCalledWith(resource);
   });
 
+  it('creates HTTP PATCH request', function () {
+    var data = {};
+    expect(resource.$patchRequest(data)).toEqual({
+      method: 'patch',
+      url: 'http://example.com',
+      data: data,
+      headers: {'Content-Type': 'application/json'}
+    })
+  });
+
+  it('delegates HTTP PATCH request to the context', function () {
+    resource.$patch();
+    expect(mockContext.httpPatch).toHaveBeenCalledWith(resource);
+  });
+
   it('creates HTTP DELETE request', function () {
     expect(resource.$deleteRequest()).toEqual({
       method: 'delete',
@@ -331,4 +346,17 @@ describe('Resource', function () {
       resource.$update({foo: 'qux'}, {self: {href: 'http://example.com/other'}});
     }).toThrowError('Self link href differs: expected "http://example.com", was "http://example.com/other"');
   });
+
+  // Merges
+
+  it('merges state', function () {
+    resource.oldVar = 'foo';
+    resource.anotherVar = 'joe';
+    resource.$merge({oldVar: null, newVar: 'bar', anotherVar: 'john'});
+
+    expect(resource.oldVar).toBeUndefined();
+    expect(resource.newVar).toBe('bar');
+    expect(resource.anotherVar).toBe('john');
+  });
+
 });

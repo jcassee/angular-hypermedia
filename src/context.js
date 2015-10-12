@@ -111,6 +111,28 @@ angular.module('hypermedia')
       }},
 
       /**
+       * Perform a HTTP PATCH request.
+       *
+       * @function
+       * @param {Resource} resource
+       * @returns a promise that is resolved to the resource
+       * @see Resource#$patchRequest
+       */
+      httpPatch: {value: function (resource) {
+        var self = this;
+        busyRequests += 1;
+        var request = updateHttp(resource.$patchRequest());
+        return $http(request).then(function () {
+          Resource.prototype.$merge.call(resource, request.data);
+          return self.markSynced(resource, Date.now());
+        }).then(function () {
+          return resource;
+        }).finally(function () {
+          busyRequests -= 1;
+        });
+      }},
+
+      /**
        * Perform a HTTP DELETE request and unmark the resource as synchronized.
        *
        * @function
