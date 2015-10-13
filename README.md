@@ -310,8 +310,7 @@ resources using `Object.defineProperties`.
     expect(person.car.brand).toBe('Mercedes');
 
 The profile is automatically set if the response of a GET request contains
-either a profile Link header or the profile parameter in the Content-Type
-header.
+either a profile link or the profile parameter in the Content-Type header.
 
 
 ## Loading resources
@@ -325,7 +324,7 @@ the resource was not already synchronized with the server.
 
     person.$links['http://example.com/rels/artistic-works'] = 'http://example.com/composers/john/works'
     person.$linkRel('http://example.com/rels/artistic-works').$load().then(function (works) {
-      console.log("John's works: " + compositions.map(function (work) { return work.title; }).join(', '));
+      console.log("John's works: " + works.map(function (work) { return work.title; }).join(', '));
     });
 
 When using resources in Angular views, it is important that all information
