@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3
+
+- Add support for the PATCH method using JSON Merge Patch. (Thomas Delnoij)
+- Add jshint. (Thomas Delnoij)
+- Add jscs.
+
 ## 0.1.2
 
 - Build distribution. (Last release had old files in dist.)
