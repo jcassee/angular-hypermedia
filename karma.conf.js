@@ -7,7 +7,8 @@ module.exports = function (config) {
       'bower_components/linkheader-parser/dist/linkheader-parser-browser.js',
       'bower_components/mediatype-parser/dist/mediatype-parser-browser.js',
       'bower_components/uri-templates/uri-templates.js',
-      'src/*.js'
+      'src/*.spec.js',
+      'dist/*.js'
     ],
 
     autoWatch: true,
