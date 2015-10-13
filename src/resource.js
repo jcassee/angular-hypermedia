@@ -426,15 +426,15 @@ angular.module('hypermedia')
 
       /**
        * Merges the resource with new data following algorithm defined
-       * in JSON Merge Patch specification (Rfc 7386, https://tools.ietf.org/html/rfc7386).
+       * in JSON Merge Patch specification (RFC 7386, https://tools.ietf.org/html/rfc7386).
        *
        * @function
        * @param {object} data
        * @param {object} [links]
        * @returns the resource
        */
-      $merge: {value: function (data){
-        var mergePatch = function(target, patch){
+      $merge: {value: function (data) {
+        var mergePatch = function (target, patch) {
           if (!angular.isObject(patch) || patch === null || Array.isArray(patch)) {
             return patch;
           }

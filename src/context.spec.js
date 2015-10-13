@@ -15,7 +15,7 @@ describe('ResourceContext', function () {
     resource = context.get('http://example.com');
   }));
 
-  afterEach(function() {
+  afterEach(function () {
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
   });
@@ -43,7 +43,9 @@ describe('ResourceContext', function () {
 
   it('performs HTTP GET requests', function () {
     var promiseResult = null;
-    context.httpGet(resource).then(function (result) { promiseResult = result; });
+    context.httpGet(resource).then(function (result) {
+      promiseResult = result;
+    });
     $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})
         .respond('{"name": "John"}', {'Content-Type': 'application/json'});
     $httpBackend.flush();
@@ -54,7 +56,9 @@ describe('ResourceContext', function () {
 
   it('converts content type profile parameter to link', function () {
     var promiseResult = null;
-    context.httpGet(resource).then(function (result) { promiseResult = result; });
+    context.httpGet(resource).then(function (result) {
+      promiseResult = result;
+    });
     $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})
         .respond('{"name": "John"}', {'Content-Type': 'application/json; profile="http://example.com/profile"'});
     $httpBackend.flush();
@@ -66,7 +70,9 @@ describe('ResourceContext', function () {
 
   it('performs HTTP PUT requests', function () {
     var promiseResult = null;
-    context.httpPut(resource).then(function (result) { promiseResult = result; });
+    context.httpPut(resource).then(function (result) {
+      promiseResult = result;
+    });
     $httpBackend.expectPUT(resource.$uri, {},
           {'Accept': 'application/json, text/plain, */*', 'Content-Type': 'application/json'})
         .respond(204);
@@ -78,7 +84,9 @@ describe('ResourceContext', function () {
   it('performs HTTP PATCH requests', function () {
     var promiseResult = null;
     var data = {};
-    context.httpPatch(resource, data).then(function (result) { promiseResult = result; });
+    context.httpPatch(resource, data).then(function (result) {
+      promiseResult = result;
+    });
     $httpBackend.expectPATCH(resource.$uri, data,
           {'Accept': 'application/json, text/plain, */*', 'Content-Type': 'application/merge-patch+json'})
         .respond(204);
@@ -90,7 +98,9 @@ describe('ResourceContext', function () {
   it('performs HTTP DELETE requests', function () {
     var promiseResult = null;
     resource.$syncTime = 1;
-    context.httpDelete(resource).then(function (result) { promiseResult = result; });
+    context.httpDelete(resource).then(function (result) {
+      promiseResult = result;
+    });
     $httpBackend.expectDELETE(resource.$uri).respond(204);
     $httpBackend.flush();
     expect(promiseResult).toBe(resource);
@@ -101,7 +111,9 @@ describe('ResourceContext', function () {
     var promiseResult = null;
     resource.$syncTime = 1;
     var promise = context.httpPost(resource, 'Test', {'Accept': '*/*', 'Content-Type': 'text/plain'});
-    promise.then(function (result) { promiseResult = result; });
+    promise.then(function (result) {
+      promiseResult = result;
+    });
     $httpBackend.expectPOST(resource.$uri, 'Test', {'Accept': '*/*', 'Content-Type': 'text/plain'}).respond(204);
     $httpBackend.flush();
     expect(promiseResult.status).toBe(204);
@@ -112,7 +124,9 @@ describe('ResourceContext', function () {
     var promiseResult = null;
     resource.$syncTime = 1;
     var promise = context.httpPost(resource, 'Test');
-    promise.then(function (result) { promiseResult = result; });
+    promise.then(function (result) {
+      promiseResult = result;
+    });
     $httpBackend.expectPOST(resource.$uri, 'Test').respond(204);
     $httpBackend.flush();
     expect(promiseResult.status).toBe(204);

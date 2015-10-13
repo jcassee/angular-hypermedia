@@ -14,15 +14,15 @@ describe('HypermediaUtil', function () {
 
   describe('forArray', function () {
 
-  // Setup
+    // Setup
 
-  var forArray;
+    var forArray;
 
-  beforeEach(function () {
-    forArray = HypermediaUtil.forArray;
-  });
+    beforeEach(function () {
+      forArray = HypermediaUtil.forArray;
+    });
 
-  // Tests
+    // Tests
 
     it('silently ignores undefined', function () {
       var result = forArray(undefined, function (s) {

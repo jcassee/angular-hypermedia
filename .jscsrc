@@ -1,0 +1,8 @@
+{
+  "preset": "crockford",
+  "validateIndentation": 2,
+  "requireCurlyBraces": false,
+  "requireMultipleVarDecl": false,
+  "requireVarDeclFirst": false,
+  "disallowDanglingUnderscores": false
+}
