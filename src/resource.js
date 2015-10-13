@@ -309,6 +309,31 @@ angular.module('hypermedia')
       }},
 
       /**
+       * Create a $http PATCH request configuration object.
+       *
+       * @function
+       * @returns {object}
+       */
+      $patchRequest: {value: function (data) {
+        return {
+          method: 'patch',
+          url: this.$uri,
+          data: data,
+          headers: {'Content-Type': 'application/merge-patch+json'}
+        };
+      }},
+
+      /**
+       * Perform an HTTP PATCH request with the resource state.
+       *
+       * @function
+       * @returns a promise that is resolved to the resource
+       */
+      $patch: {value: function () {
+        return this.$context.httpPatch(this);
+      }},
+
+      /**
        * Create a $http DELETE request configuration object.
        *
        * @function
@@ -397,6 +422,40 @@ angular.module('hypermedia')
         if (profileUris) this.$profile = profileUris;
 
         return this;
+      }},
+
+      /**
+       * Merges the resource with new data following algorithm defined
+       * in JSON Merge Patch specification (Rfc 7386, https://tools.ietf.org/html/rfc7386).
+       *
+       * @function
+       * @param {object} data
+       * @param {object} [links]
+       * @returns the resource
+       */
+      $merge: {value: function (data){
+        var mergePatch = function(target, patch){
+          if (!angular.isObject(patch) || patch === null || Array.isArray(patch)) {
+            return patch;
+          }
+
+          if (!angular.isObject(target) || target === null || Array.isArray(target)) {
+            target = {};
+          }
+
+          Object.keys(patch).forEach(function (key) {
+            var value = patch[key];
+            if (value === null) {
+              delete target[key];
+            } else {
+              target[key] = mergePatch(target[key], value);
+            }
+          });
+
+          return target;
+        };
+
+        return mergePatch(this, data);
       }}
     });
 
