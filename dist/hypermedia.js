@@ -870,7 +870,7 @@ angular.module('hypermedia')
 
       /**
        * Merges the resource with new data following algorithm defined
-       * in JSON Merge Patch specification (Rfc 7386, https://tools.ietf.org/html/rfc7386).
+       * in JSON Merge Patch specification (RFC 7386, https://tools.ietf.org/html/rfc7386).
        *
        * @function
        * @param {object} data
