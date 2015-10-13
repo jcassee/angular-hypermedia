@@ -198,6 +198,28 @@ angular.module('hypermedia')
       }},
 
       /**
+       * Perform a HTTP PATCH request.
+       *
+       * @function
+       * @param {Resource} resource
+       * @returns a promise that is resolved to the resource
+       * @see Resource#$patchRequest
+       */
+      httpPatch: {value: function (resource, data) {
+        var self = this;
+        busyRequests += 1;
+        var request = updateHttp(resource.$patchRequest(data));
+        return $http(request).then(function () {
+          Resource.prototype.$merge.call(resource, request.data);
+          return self.markSynced(resource, Date.now());
+        }).then(function () {
+          return resource;
+        }).finally(function () {
+          busyRequests -= 1;
+        });
+      }},
+
+      /**
        * Perform a HTTP DELETE request and unmark the resource as synchronized.
        *
        * @function
@@ -724,6 +746,31 @@ angular.module('hypermedia')
       }},
 
       /**
+       * Create a $http PATCH request configuration object.
+       *
+       * @function
+       * @returns {object}
+       */
+      $patchRequest: {value: function (data) {
+        return {
+          method: 'patch',
+          url: this.$uri,
+          data: data,
+          headers: {'Content-Type': 'application/json'}
+        };
+      }},
+
+      /**
+       * Perform an HTTP PATCH request with the resource state.
+       *
+       * @function
+       * @returns a promise that is resolved to the resource
+       */
+      $patch: {value: function () {
+        return this.$context.httpPatch(this);
+      }},
+
+      /**
        * Create a $http DELETE request configuration object.
        *
        * @function
@@ -812,6 +859,27 @@ angular.module('hypermedia')
         if (profileUris) this.$profile = profileUris;
 
         return this;
+      }},
+
+      /**
+       * Merges the resource with new data following algorithm defined
+       * in JSON Merge Patch specification (Rfc 7386, https://tools.ietf.org/html/rfc7386).
+       *
+       * @function
+       * @param {object} data
+       * @param {object} [links]
+       * @returns the resource
+       */
+      $merge: {value: function (data){
+        var self = this;
+        Object.keys(data).forEach(function(key){
+          if (data[key] === null) {
+            delete self[key];
+          } else {
+            self[key] = data[key];
+          }
+          return self;
+        });
       }}
     });
 
