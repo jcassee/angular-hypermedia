@@ -1,6 +1,6 @@
 {
   "name": "angular-hypermedia",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Hypermedia REST API client for AngularJS applications",
   "repository": "https://github.com/jcassee/angular-hypermedia",
   "license": "MIT",

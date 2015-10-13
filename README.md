@@ -32,9 +32,10 @@ Then include it (and its dependencies) in your HTML page.
 
 ## Quickstart
 
-Consider a controller that lists all GitHub notifications for the current user.
-It can use the `next` and `prev` links provided by the GitHub API for
-pagination.
+Consider a controller that lists [all GitHub notifications for the current
+user](https://developer.github.com/v3/activity/notifications/#list-your-notifications).
+It can use the `next` and `prev` links provided by [the GitHub API for
+pagination](https://developer.github.com/v3/#pagination).
 
 This could be an implementation of the controller:
 
