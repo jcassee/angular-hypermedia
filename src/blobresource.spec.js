@@ -64,6 +64,10 @@ describe('BlobResource', function () {
     expect(request.addTransformResponse('test')).toEqual({data: 'test'});
   });
 
+  it('does not support HTTP PATCH request', function () {
+    expect(resource.$patchRequest).toThrowError('BlobResource does not support the PATCH method');
+  });
+
   function createBlob(data, type) {
     if (!angular.isArray(data)) data = [data];
     if (angular.isFunction(Blob)) {
