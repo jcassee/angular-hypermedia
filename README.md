@@ -2,12 +2,12 @@
 
 [![Build Status](https://travis-ci.org/jcassee/angular-hypermedia.svg?branch=master)](https://travis-ci.org/jcassee/angular-hypermedia)
 [![Coverage Status](https://coveralls.io/repos/jcassee/angular-hypermedia/badge.svg?branch=master&service=github)](https://coveralls.io/github/jcassee/angular-hypermedia?branch=master)
-[![Bower](https://img.shields.io/bower/v/angular-hypermedia.svg)](http://bower.io/search/?q=angular-hypermedia) 
+[![Bower](https://img.shields.io/bower/v/angular-hypermedia.svg)](http://bower.io/search/?q=angular-hypermedia)
 [![License](https://img.shields.io/github/license/jcassee/angular-hypermedia.svg)](https://github.com/jcassee/angular-hypermedia/blob/master/LICENSE.md)
 
 
-A hypermedia client for AngularJS applications. Supports relations in HTTP
-[Link headers](http://tools.ietf.org/html/rfc5988), JSON properties and
+A hypermedia client for AngularJS applications. Supports relations in HTTP [Link
+headers](http://tools.ietf.org/html/rfc5988), JSON properties and
 [JSON HAL](http://tools.ietf.org/html/draft-kelly-json-hal), and resource
 [profiles](http://tools.ietf.org/html/rfc6906).
 
@@ -21,7 +21,7 @@ is available that adds offline caching of resources.
 Install using Bower.
 
     bower install angular-hypermedia --save
-    
+
 Then include it (and its dependencies) in your HTML page.
 
     <script src="bower_components/angular-hypermedia/dist/hypermedia.js"></script>
@@ -89,8 +89,8 @@ the exported services.
 
 ## Resources and contexts
 
-This module assumes that a hypermedia API client often interacts with 
-multiple related resources for the functionality provided by a page. The 
+This module assumes that a hypermedia API client often interacts with
+multiple related resources for the functionality provided by a page. The
 `ResourceContext` is responsible for keeping together resources that are being
 used together. Resources are bound to a single context.
 
@@ -123,14 +123,12 @@ default factory.
     var movie2 = context.get('http://example.com/movie/jaws');
 
 
-## GET, PUT, DELETE requests: synchronization
+## GET, PUT, DELETE requests: state synchronization
 
 Resources are synchronized using GET, PUT and DELETE requests. The methods on
 the resource object are `$get`, `$put` and `$delete` respectively. These
-methods return a promise that is resolved with `resource` when the request
+methods return a promise that is resolved with the `Resource` when the request
 completes successfully.
-
-(Note: the PATCH method is not -- yet? -- supported.)
 
 **Example:**
 
@@ -140,8 +138,33 @@ completes successfully.
     });
 
     person.email = 'john@example.com';
+    person.favoriteMovie = 'Close Encounters';
     person.$put().then(function () {
       console.log('success!');
+    });
+
+
+## PATCH requests: update and synchronize using JSON Merge Patch
+
+The PATCH request method updates a resources by only sending a "diff" of the
+state. `Resource` uses [JSON Merge Patch](https://tools.ietf.org/html/rfc7386).
+It is a very simple JSON patch format suitable for describing modifications to
+JSON documents that primarily use objects for their structure and do not make
+use of explicit `null` values. Subclasses may choose to support other formats.
+
+The `$patch` method accepts a mapping of (new or existing) properties to updated
+values; mapping a property to `null` will delete the property. Objects are
+merged recursively, but arrays are replaced. The algorithm is [specified in the
+RFC](https://tools.ietf.org/html/rfc7386#section-2). The changes are applied to
+the `Resource` object after the HTTP request has completed successfully; if it
+fails the object remains unchanged.
+
+**Example:**
+
+    person.$patch({email: 'johnwilliams@example.com', favoriteMovie: null}).then(function () {
+      console.log('email changed to ' + person.email);
+    }, function () {
+      console.log('request failed, email is still ' + person.email);
     });
 
 
@@ -184,7 +207,7 @@ value is an array of URIs then an array of resources is returned.
 
     var car = person.$propRel('carHref');
     var friends = person.$propRel('friendHrefs');
-    
+
 If the target resource is not created using the default context factory, you can
 add the factory as the last parameter.
 
@@ -197,7 +220,7 @@ add the factory as the last parameter.
 ## URI Templates
 
 A reference can also be a [URI Template](http://tools.ietf.org/html/rfc6570),
-containing paramaters that need to be substituted before it can be resolved. The
+containing parameters that need to be substituted before it can be resolved. The
 `$propRel` accepts a second argument of variables (a mapping name -> value) to
 resolve a URI Template reference.
 
@@ -224,10 +247,10 @@ The `$links` property is a mapping of relations to link objects. A link object
 has an `href` property containing the relation target URI. Other properties are
 link attributes as listed in the [RFC](http://tools.ietf.org/html/rfc5988).
 
-Relations are either keywords from the 
-[IANA list](http://www.iana.org/assignments/link-relations/link-relations.xhtml)
-or URIs. (These URIs are used as references, but may point to documentation
-that describes the relationship.)
+Relations are either keywords from the [IANA
+list](http://www.iana.org/assignments/link-relations/link-relations.xhtml) or
+URIs. (These URIs are used as references, but may point to documentation that
+describes the relationship.)
 
 **Example:**
 
@@ -251,7 +274,7 @@ examples, the resource referenced by `http://example.com/composer/john` "is a
 person". This is called a [profile](http://tools.ietf.org/html/rfc6906).
 Profiles are identified by a URI. (As with relations, they may double as a
 pointer to the profile documentation.) Resources have a `$profile` property
-containing the profile URI. 
+containing the profile URI.
 
 It is possible to add functionality to resources of specific profiles by
 registering properties. Setting `$profile` immediately applies the properties
@@ -273,7 +296,7 @@ resources using `Object.defineProperties`.
         fullName: {get: function () {
           return this.firstName + ' ' + this.lastName;
         }},
-        
+
         car: {get: function () {
           return this.propRel('carHref');
         }}
@@ -281,7 +304,7 @@ resources using `Object.defineProperties`.
     });
 
     person.$profile = 'http://example.com/profiles/person';
-    
+
     expect(person.fullName).toBe('John Williams');
     expect(person.car.brand).toBe('Mercedes');
 
@@ -321,7 +344,7 @@ resources directly (such as the `car` profile property in the examples).
       },
       'http://example.com/rels/artistic-works': {}
     });
-    
+
 Loading related resources is usually done in resolve functions of a URL route.
 
 **Example:**
@@ -358,6 +381,9 @@ not application state.
 On GET requests, links are copied from the `_links` property and embedded
 resources are extracted from `_embedded` and added to the context. Both
 properties are then deleted.
+
+Using `$load` and `$loadPaths` makes sense especially with HAL, as this makes
+the client robust with regard to the presence or absence of embedded resources.
 
 **Example:**
 
