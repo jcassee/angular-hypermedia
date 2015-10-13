@@ -77,6 +77,13 @@ angular.module('hypermedia')
           data: this.data,
           headers: {'Content-Type': this.data.type || 'binary/octet-stream'}
         };
+      }},
+
+      /**
+       * Throw an error. Binary resources have no obvious PATCH semantics.
+       */
+      $patchRequest: {value: function () {
+        throw new Error('BlobResource does not support the PATCH method');
       }}
     });
 
@@ -870,8 +877,8 @@ angular.module('hypermedia')
        * @param {object} [links]
        * @returns the resource
        */
-      $merge: {value: function (data){
-        var mergePatch = function(target, patch){
+      $merge: {value: function (data) {
+        var mergePatch = function (target, patch) {
           if (!angular.isObject(patch) || patch === null || Array.isArray(patch)) {
             return patch;
           }
