@@ -319,7 +319,7 @@ angular.module('hypermedia')
           method: 'patch',
           url: this.$uri,
           data: data,
-          headers: {'Content-Type': 'application/json'}
+          headers: {'Content-Type': 'application/merge-patch+json'}
         };
       }},
 

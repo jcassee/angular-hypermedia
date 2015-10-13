@@ -289,7 +289,7 @@ describe('Resource', function () {
       method: 'patch',
       url: 'http://example.com',
       data: data,
-      headers: {'Content-Type': 'application/json'}
+      headers: {'Content-Type': 'application/merge-patch+json'}
     });
   });
 
