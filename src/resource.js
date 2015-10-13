@@ -434,15 +434,28 @@ angular.module('hypermedia')
        * @returns the resource
        */
       $merge: {value: function (data){
-        var self = this;
-        Object.keys(data).forEach(function(key){
-          if (data[key] === null) {
-            delete self[key];
-          } else {
-            self[key] = data[key];
+        var mergePatch = function(target, patch){
+          if (!angular.isObject(patch) || patch === null || Array.isArray(patch)) {
+            return patch;
           }
-          return self;
-        });
+
+          if (!angular.isObject(target) || target === null || Array.isArray(target)) {
+            target = {};
+          }
+
+          Object.keys(patch).forEach(function (key) {
+            var value = patch[key];
+            if (value === null) {
+              delete target[key];
+            } else {
+              target[key] = mergePatch(target[key], value);
+            }
+          });
+
+          return target;
+        };
+
+        return mergePatch(this, data);
       }}
     });
 

@@ -332,9 +332,9 @@ describe('Resource', function () {
   // Updates
 
   it('updates state, links and profile', function () {
-    resource.oldVar = 'test';
+    resource.aVar = 'test';
     resource.$update({foo: 'bar'}, {profile: {href: 'http://example.com/profile'}});
-    expect(resource.oldVar).toBeUndefined();
+    expect(resource.aVar).toBeUndefined();
     expect(resource.foo).toBe('bar');
     expect(resource.$links).toEqual({profile: {href: 'http://example.com/profile'}});
     expect(resource.$profile).toBe('http://example.com/profile');
@@ -350,13 +350,29 @@ describe('Resource', function () {
   // Merges
 
   it('merges state', function () {
-    resource.oldVar = 'foo';
-    resource.anotherVar = 'joe';
-    resource.$merge({oldVar: null, newVar: 'bar', anotherVar: 'john'});
+    resource.aVar = 'foo';
+    resource.bVar = 'joe';
+    resource.$merge({aVar: null, bVar: 'john', newVar: 'bar'});
 
-    expect(resource.oldVar).toBeUndefined();
+    expect(resource.aVar).toBeUndefined();
+    expect(resource.bVar).toBe('john');
     expect(resource.newVar).toBe('bar');
-    expect(resource.anotherVar).toBe('john');
+  });
+
+  it('merges nested state', function () {
+    resource.nested = {
+      aVar: 'foo',
+      bVar: 'joe'
+    };
+    resource.$merge({nested: {
+      aVar: null,
+      bVar: 'john',
+      newVar: 'bar'
+    }});
+
+    expect(resource.nested.aVar).toBeUndefined();
+    expect(resource.nested.bVar).toBe('john');
+    expect(resource.nested.newVar).toBe('bar');
   });
 
 });
