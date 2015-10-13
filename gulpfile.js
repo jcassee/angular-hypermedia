@@ -5,14 +5,24 @@ var gulp = require('gulp'),
   concat = require('gulp-concat'),
   ignore = require('gulp-ignore'),
   jshint = require('gulp-jshint'),
+  jscs   = require('gulp-jscs'),
   watch  = require('gulp-watch'),
   path   = require('path');
 
 var dist = 'dist/hypermedia.js';
 
-gulp.task('default', ['jshint'], function(){
+gulp.task('default', function () {
   var distDir = path.dirname(dist);
   return gulp.src('src/*.js')
+    // jshint
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'))
+    .pipe(jshint.reporter('fail'))
+    // jscs
+    .pipe(jscs())
+    .pipe(jscs.reporter())
+    .pipe(jscs.reporter('fail'))
+    // build
     .pipe(ignore.exclude('*.spec.js'))
     .pipe(concat(path.basename(dist)))
     .pipe(gulp.dest(distDir));
@@ -23,11 +33,4 @@ gulp.task('watch', function () {
   watch('src/**', batch(function (events, done) {
     gulp.start('default', done);
   }));
-});
-
-gulp.task('jshint', function () {
-  return gulp.src(['src/*.js'])
-    .pipe(jshint('./.jshintrc'))
-    .pipe(jshint.reporter('jshint-stylish'))
-    .pipe(jshint.reporter('fail'));
 });
