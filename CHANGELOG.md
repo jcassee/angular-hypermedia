@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Fix bug with HalResource subclasses in embedded resources. (Thomas Delnoij)
+
 ## 0.2.0
 
 - Add support for the PATCH method using JSON Merge Patch. (Thomas Delnoij)
