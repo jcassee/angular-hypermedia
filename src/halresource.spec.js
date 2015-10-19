@@ -95,4 +95,39 @@ describe('HalResource', function () {
     expect(resource1.foo).toBe('bar');
     expect(resource._embedded).toBeUndefined();
   });
+
+  it('extracts and links embedded resources for custom resource type', function () {
+    var MyResource = function (uri, context) {
+      return HalResource.call(this, uri, context);
+    };
+    MyResource.prototype = Object.create(HalResource.prototype, {
+      constructor: {value: MyResource}
+    });
+    var resource2 = new MyResource(uri, mockContext),
+      resource3 = new MyResource('http://example.com/1', mockContext);
+    mockContext.get.and.callFake(function (uri) {
+      switch (uri) {
+        case resource2.$uri:  return resource2;
+        case resource3.$uri: return resource3;
+      }
+    });
+
+    resource2.$update({
+      _links: {
+        self: {href: 'http://example.com'},
+        profile: {href: 'http://example.com/profile'}
+      },
+      _embedded: {
+        'next': {
+          foo: 'bar',
+          _links: {
+            self: {href: 'http://example.com/1'}
+          }
+        }
+      }
+    });
+
+    expect(mockContext.get).toHaveBeenCalledWith(resource2.$uri, MyResource);
+    expect(mockContext.get).toHaveBeenCalledWith(resource3.$uri, MyResource);
+  });
 });

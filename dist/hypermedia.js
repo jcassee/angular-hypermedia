@@ -393,7 +393,7 @@ angular.module('hypermedia')
           throw new Error("Self link href differs: expected '" + this.$uri + "', was " + angular.toJson(selfHref));
         }
 
-        return extractAndUpdateResources(data, links, this.$context);
+        return extractAndUpdateResources(data, links, this);
       }}
     });
 
@@ -405,9 +405,9 @@ angular.module('hypermedia')
      *
      * @param {object} data
      * @param {object} [links]
-     * @param {ResourceContext} context
+     * @param {Resource} self
      */
-    function extractAndUpdateResources(data, links, context) {
+    function extractAndUpdateResources(data, links, self) {
       var resources = [];
 
       // Extract links
@@ -426,13 +426,13 @@ angular.module('hypermedia')
         }
         // Recurse into embedded resource
         forArray(embeds, function (embedded) {
-          resources = resources.concat(extractAndUpdateResources(embedded, {}, context));
+          resources = resources.concat(extractAndUpdateResources(embedded, {}, self));
         });
       });
       delete data._embedded;
 
       // Update resource
-      var resource = context.get(links.self.href, HalResource);
+      var resource = self.$context.get(links.self.href, self.constructor);
       Resource.prototype.$update.call(resource, data, links);
       resources.push(resource);
 
