@@ -5,14 +5,13 @@ describe('HalResource', function () {
 
   // Setup
 
-  var $log, $q, $rootScope, HalResource, ResourceContext, mockContext, uri, resource;
+  var $log, $q, $rootScope, HalResource, mockContext, uri, resource;
 
-  beforeEach(inject(function (_$log_, _$q_, _$rootScope_, _HalResource_, _ResourceContext_) {
+  beforeEach(inject(function (_$log_, _$q_, _$rootScope_, _HalResource_) {
     $log = _$log_;
     $q = _$q_;
     $rootScope = _$rootScope_;
     HalResource = _HalResource_;
-    ResourceContext = _ResourceContext_;
     mockContext = jasmine.createSpyObj('mockContext', ['get', 'httpGet', 'httpPut', 'httpDelete', 'httpPost']);
     uri = 'http://example.com';
     resource = new HalResource(uri, mockContext);
