@@ -16,6 +16,22 @@ An extension module
 is available that adds offline caching of resources.
 
 
+* [Installation](#installation)
+* [Quickstart](#quickstart)
+* [Provided services](#provided-services)
+* [Resources and contexts](#resources-and-contexts)
+* [GET, PUT, DELETE requests: state synchronization](#get-put-delete-requests-state-synchronization)
+* [PATCH requests: synchronization using JSON Merge Patch](#patch-requests-synchronization-using-json-merge-patch)
+* [POST requests](#post-requests)
+* [Relations](#relations)
+* [URI Templates](#uri-templates)
+* [Links](#links)
+* [Profiles](#profiles)
+* [Loading resources](#loading-resources)
+* [JSON HAL](#json-hal)
+* [Blob resources](#blob-resources)
+
+
 ## Installation
 
 Install using Bower.
@@ -145,7 +161,7 @@ completes successfully.
     });
 
 
-## PATCH requests: update and synchronize using JSON Merge Patch
+## PATCH requests: synchronization using JSON Merge Patch
 
 The PATCH request method updates a resources by only sending a "diff" of the
 state. `Resource` uses [JSON Merge Patch](https://tools.ietf.org/html/rfc7386).
@@ -281,7 +297,7 @@ It is possible to add functionality to resources of specific profiles by
 registering properties. Setting `$profile` immediately applies the properties
 registered with that profile. (The properties are set on a per-resource
 prototype, so they do not interfere with the resource data and are removed when
-the profile is removed.
+the profile is removed.)
 
 Note: if using an array, adding profiles to the array after setting `$profile`
 will not update the properties.
