@@ -294,8 +294,9 @@ describe('Resource', function () {
   });
 
   it('delegates HTTP PATCH request to the context', function () {
-    resource.$patch();
-    expect(mockContext.httpPatch).toHaveBeenCalledWith(resource);
+    var data = {};
+    resource.$patch(data);
+    expect(mockContext.httpPatch).toHaveBeenCalledWith(resource, data);
   });
 
   it('creates HTTP DELETE request', function () {
