@@ -243,7 +243,8 @@ angular.module('hypermedia')
       'responseError': function (response) {
         var contentType = response.headers('Content-Type');
         var handler = handlers[contentType];
-        return handler ? handler(response) : $q.reject(response);
+        response.error = (handler ? handler(response) : {message: response.statusText});
+        return $q.reject(response);
       },
       'registerErrorHandler': function (contentType, handler) {
         if (!handlers) handlers = {};

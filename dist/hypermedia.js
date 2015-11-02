@@ -337,7 +337,8 @@ angular.module('hypermedia')
       'responseError': function (response) {
         var contentType = response.headers('Content-Type');
         var handler = handlers[contentType];
-        return handler ? handler(response) : $q.reject(response);
+        response.error = (handler ? handler(response) : {message: response.statusText});
+        return $q.reject(response);
       },
       'registerErrorHandler': function (contentType, handler) {
         if (!handlers) handlers = {};
@@ -356,43 +357,6 @@ angular.module('hypermedia')
  * @returns {Resource} the created resource
  * @see ResourceContext
  */
-
-'use strict';
-
-angular.module('hypermedia')
-
-  .run(function ($q, ResourceContext, HalError) {
-    var vndErrorHandler = function (response) {
-      response.error = new HalError(response.data);
-
-      return $q.reject(response);
-    };
-
-    ResourceContext.registerErrorHandler('application/vnd+error', vndErrorHandler);
-  })
-
-  .factory('HalError', function () {
-    var HalError = function (data) {
-      var self = this;
-      this.message = data.message;
-      this.errors = [];
-
-      var embeds = (data._embedded ? data._embedded['ilent:error'] : undefined);
-      if (embeds) {
-        if (!Array.isArray(embeds)) {
-          embeds = [embeds];
-        }
-        embeds.forEach(function (embed) {
-          self.errors.push(new HalError(embed));
-        });
-      }
-    };
-
-    return HalError;
-  })
-
-
-;
 
 'use strict';
 
@@ -1043,5 +1007,40 @@ angular.module('hypermedia')
       }
     };
   })
+
+;
+
+'use strict';
+
+angular.module('hypermedia')
+
+  .run(function ($q, ResourceContext, VndError) {
+    var vndErrorHandler = function (response) {
+      return new VndError(response.data);
+    };
+
+    ResourceContext.registerErrorHandler('application/vnd+error', vndErrorHandler);
+  })
+
+  .factory('VndError', function () {
+    var HalError = function (data) {
+      var self = this;
+      this.message = data.message;
+      this.errors = [];
+
+      var embeds = (data._embedded ? data._embedded.errors : undefined);
+      if (embeds) {
+        if (!Array.isArray(embeds)) {
+          embeds = [embeds];
+        }
+        embeds.forEach(function (embed) {
+          self.errors.push(new HalError(embed));
+        });
+      }
+    };
+
+    return HalError;
+  })
+
 
 ;

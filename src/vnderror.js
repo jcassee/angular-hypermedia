@@ -2,23 +2,21 @@
 
 angular.module('hypermedia')
 
-  .run(function ($q, ResourceContext, HalError) {
+  .run(function ($q, ResourceContext, VndError) {
     var vndErrorHandler = function (response) {
-      response.error = new HalError(response.data);
-
-      return $q.reject(response);
+      return new VndError(response.data);
     };
 
     ResourceContext.registerErrorHandler('application/vnd+error', vndErrorHandler);
   })
 
-  .factory('HalError', function () {
+  .factory('VndError', function () {
     var HalError = function (data) {
       var self = this;
       this.message = data.message;
       this.errors = [];
 
-      var embeds = (data._embedded ? data._embedded['ilent:error'] : undefined);
+      var embeds = (data._embedded ? data._embedded.errors : undefined);
       if (embeds) {
         if (!Array.isArray(embeds)) {
           embeds = [embeds];
