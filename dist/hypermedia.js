@@ -773,8 +773,8 @@ angular.module('hypermedia')
        * @function
        * @returns a promise that is resolved to the resource
        */
-      $patch: {value: function () {
-        return this.$context.httpPatch(this);
+      $patch: {value: function (data) {
+        return this.$context.httpPatch(this, data);
       }},
 
       /**
