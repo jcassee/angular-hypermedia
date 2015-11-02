@@ -54,7 +54,7 @@ describe('ResourceContext', function () {
     var spy = jasmine.createSpy('spy');
     ResourceContext.registerErrorHandler('application/json', spy);
 
-    context.httpGet(resource).catch(function(result){
+    context.httpGet(resource).catch(function (result) {
       promiseResult = result;
     });
     $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})
@@ -68,7 +68,7 @@ describe('ResourceContext', function () {
   it('invokes default error handler for content type \'application/vnd+error\'', function () {
     var promiseResult;
     var msg = 'Validatie fout';
-    context.httpGet(resource).catch(function(result){
+    context.httpGet(resource).catch(function (result) {
       promiseResult = result;
     });
     $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})

@@ -2,7 +2,7 @@
 
 angular.module('hypermedia')
 
-  .run(function($q, ResourceContext, HalError){
+  .run(function ($q, ResourceContext, HalError) {
     var vndErrorHandler = function (response) {
       response.error = new HalError(response.data);
 
