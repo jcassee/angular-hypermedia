@@ -245,7 +245,10 @@ angular.module('hypermedia')
           Object.keys(paths).forEach(function (key) {
             var uris = self.$propHref(key);
             if (!uris) uris = self.$linkHref(key);
-            if (!uris) return;
+            if (!uris) {
+              $log.info('path not found: ' + key);
+              return;
+            }
 
             uris = angular.isArray(uris) ? uris : [uris];
             uris.forEach(function (uri) {
