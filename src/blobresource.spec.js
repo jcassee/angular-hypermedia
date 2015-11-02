@@ -22,7 +22,7 @@ describe('BlobResource', function () {
   it('is initialized correctly', function () {
     expect(resource.$uri).toBe(uri);
     expect(resource.$context).toBe(mockContext);
-    expect(resource.$links).toEqual({});
+    expect(resource.$links).toEqual({self: {href: uri}});
     expect(resource.$syncTime).toBeNull();
     expect(resource.$profile).toBeNull();
   });
