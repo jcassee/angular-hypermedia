@@ -364,15 +364,21 @@ describe('Resource', function () {
       aVar: 'foo',
       bVar: 'joe'
     };
-    resource.$merge({nested: {
-      aVar: null,
-      bVar: 'john',
-      newVar: 'bar'
-    }});
+    resource.$merge({
+      nested: {
+        aVar: null,
+        bVar: 'john',
+        newVar: 'bar'
+      },
+      newNested: {
+        newVar: 'qux'
+      }
+    });
 
     expect(resource.nested.aVar).toBeUndefined();
     expect(resource.nested.bVar).toBe('john');
     expect(resource.nested.newVar).toBe('bar');
+    expect(resource.newNested.newVar).toBe('qux');
   });
 
 });
