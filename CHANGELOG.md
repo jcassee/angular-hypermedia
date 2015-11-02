@@ -1,13 +1,19 @@
 # Changelog
 
+## 0.3.0
+
+- Add self link to Resource.
+- Log non-existent paths in Resource.$loadPaths.
+- Fix Resource.$patch.
+
 ## 0.2.1
 
-- Fix bug with HalResource subclasses in embedded resources. (Thomas Delnoij)
+- Fix bug with HalResource subclasses in embedded resources.
 
 ## 0.2.0
 
-- Add support for the PATCH method using JSON Merge Patch. (Thomas Delnoij)
-- Add jshint. (Thomas Delnoij)
+- Add support for the PATCH method using JSON Merge Patch.
+- Add jshint.
 - Add jscs.
 
 ## 0.1.2
