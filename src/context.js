@@ -249,7 +249,7 @@ angular.module('hypermedia')
         if (!handlers) handlers = {};
         handlers[contentType] = handler;
       }
-    }
+    };
   })
 
 ;

@@ -1,3 +1,5 @@
+'use strict';
+
 describe('HalError', function () {
   beforeEach(module('hypermedia'));
 
