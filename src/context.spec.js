@@ -37,7 +37,7 @@ describe('ResourceContext', function () {
 
   it('invokes error handler for content type', function () {
     var spy = jasmine.createSpy('spy').and.callFake(function (response) {
-      return $q.reject(response);
+      return {};
     });
     ResourceContext.registerErrorHandler(problemJson, spy);
 

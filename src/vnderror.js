@@ -10,6 +10,14 @@ angular.module('hypermedia')
     ResourceContext.registerErrorHandler('application/vnd+error', vndErrorHandler);
   })
 
+  /**
+   * @ngdoc type
+   * @name VndError
+   * @description
+   *
+   * VndError represents errors from server with content type 'application/vnd+error',
+   * see: https://github.com/blongden/vnd.error
+   */
   .factory('VndError', function () {
     var HalError = function (data) {
       var self = this;

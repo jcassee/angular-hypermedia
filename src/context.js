@@ -237,6 +237,15 @@ angular.module('hypermedia')
     }
   }])
 
+  /**
+   * @ngdoc service
+   * @name errorInterceptor
+   * @description
+   *
+   * Intercepts error from server and invokes error handler for content-type,
+   * or default error handler if none is found. Error with message is published
+   * on response under 'error' key.
+   */
   .factory('errorInterceptor', function ($q) {
     var handlers;
     return {
