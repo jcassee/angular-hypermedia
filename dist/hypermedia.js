@@ -96,6 +96,10 @@ angular.module('hypermedia')
 
 angular.module('hypermedia')
 
+  .config(function ($httpProvider) {
+    $httpProvider.interceptors.push('errorInterceptor');
+  })
+
   /**
    * @ngdoc type
    * @name ResourceContext
@@ -104,7 +108,7 @@ angular.module('hypermedia')
    * Context for working with hypermedia resources. The context has methods
    * for making HTTP requests and acts as an identity map.
    */
-  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', function ($http, $log, $q, Resource) {
+  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', 'errorInterceptor', function ($http, $log, $q, Resource, errorInterceptor) {
 
     var busyRequests = 0;
 
@@ -300,6 +304,10 @@ angular.module('hypermedia')
        */
       busyRequests: {get: function () {
         return busyRequests;
+      }},
+
+      registerErrorHandler: {value: function (contentType, handler) {
+        errorInterceptor.registerErrorHandler(contentType, handler);
       }}
     });
 
@@ -323,6 +331,21 @@ angular.module('hypermedia')
     }
   }])
 
+  .factory('errorInterceptor', function ($q) {
+    var handlers;
+    return {
+      'responseError': function (response) {
+        var contentType = response.headers('Content-Type');
+        var handler = handlers[contentType];
+        return handler ? handler(response) : $q.reject(response);
+      },
+      'registerErrorHandler': function (contentType, handler) {
+        if (!handlers) handlers = {};
+        handlers[contentType] = handler;
+      }
+    };
+  })
+
 ;
 
 /**
@@ -333,6 +356,43 @@ angular.module('hypermedia')
  * @returns {Resource} the created resource
  * @see ResourceContext
  */
+
+'use strict';
+
+angular.module('hypermedia')
+
+  .run(function ($q, ResourceContext, HalError) {
+    var vndErrorHandler = function (response) {
+      response.error = new HalError(response.data);
+
+      return $q.reject(response);
+    };
+
+    ResourceContext.registerErrorHandler('application/vnd+error', vndErrorHandler);
+  })
+
+  .factory('HalError', function () {
+    var HalError = function (data) {
+      var self = this;
+      this.message = data.message;
+      this.errors = [];
+
+      var embeds = (data._embedded ? data._embedded['ilent:error'] : undefined);
+      if (embeds) {
+        if (!Array.isArray(embeds)) {
+          embeds = [embeds];
+        }
+        embeds.forEach(function (embed) {
+          self.errors.push(new HalError(embed));
+        });
+      }
+    };
+
+    return HalError;
+  })
+
+
+;
 
 'use strict';
 
