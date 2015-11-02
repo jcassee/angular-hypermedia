@@ -250,7 +250,7 @@ angular.module('hypermedia')
             var uris = self.$propHref(key);
             if (!uris) uris = self.$linkHref(key);
             if (!uris) {
-              $log.warn('path \'' + key + '\' not found for resource ' + self.$uri);
+              $log.warn('path "' + key + '" not found for resource: ' + self.$uri);
               return;
             }
 

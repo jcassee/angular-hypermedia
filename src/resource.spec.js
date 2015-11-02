@@ -266,7 +266,7 @@ describe('Resource', function () {
     });
 
     resource.$loadPaths({nonexistent: {}}).then(function () {
-      expect($log.warn).toHaveBeenCalledWith('path \'nonexistent\' not found for resource http://example.com');
+      expect($log.warn).toHaveBeenCalledWith('path "nonexistent" not found for resource: http://example.com');
       done();
     });
     $rootScope.$digest();
