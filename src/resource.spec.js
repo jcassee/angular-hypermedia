@@ -254,6 +254,24 @@ describe('Resource', function () {
     $rootScope.$digest();
   });
 
+  it('generates info message if path not found', function (done) {
+    spyOn($log, 'warn');
+    mockContext.get.and.callFake(function (uri) {
+      switch (uri) {
+        case resource.$uri: return resource;
+      }
+    });
+    mockContext.httpGet.and.callFake(function (resource) {
+      return $q.when(resource);
+    });
+
+    resource.$loadPaths({nonexistent: {}}).then(function () {
+      expect($log.warn).toHaveBeenCalledWith('path \'nonexistent\' not found for resource http://example.com');
+      done();
+    });
+    $rootScope.$digest();
+  });
+
   // HTTP
 
   it('creates HTTP GET request', function () {
