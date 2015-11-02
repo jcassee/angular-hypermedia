@@ -52,7 +52,11 @@ angular.module('hypermedia')
          *
          * @property {object}
          */
-        $links: {value: {}, writable: true},
+        $links: {value: {
+          self: {
+            href: uri
+          }
+        }, writable: true},
 
         /**
          * The timestamp of the last successful GET or PUT request.
@@ -407,16 +411,10 @@ angular.module('hypermedia')
               angular.toJson(links.self.href));
         }
 
-        // Update state
-        Object.keys(this).forEach(function (key) {
-          delete this[key];
-        }, this);
-        Object.keys(data).forEach(function (key) {
-          this[key] = data[key];
-        }, this);
-
-        // Update links
-        this.$links = links;
+        // Update resource
+        angular.copy(data, this);
+        this.$links = {self: {href: this.$uri}};  // Add default self link
+        angular.extend(this.$links, links);
 
         // Optionally apply profile(s)
         var profileUris = forArray(links.profile, function (link) {

@@ -22,7 +22,7 @@ describe('Resource', function () {
   it('is initialized correctly', function () {
     expect(resource.$uri).toBe(uri);
     expect(resource.$context).toBe(mockContext);
-    expect(resource.$links).toEqual({});
+    expect(resource.$links).toEqual({self: {href: uri}});
     expect(resource.$syncTime).toBeNull();
     expect(resource.$profile).toBeNull();
   });
@@ -355,7 +355,7 @@ describe('Resource', function () {
     resource.$update({foo: 'bar'}, {profile: {href: 'http://example.com/profile'}});
     expect(resource.aVar).toBeUndefined();
     expect(resource.foo).toBe('bar');
-    expect(resource.$links).toEqual({profile: {href: 'http://example.com/profile'}});
+    expect(resource.$links).toEqual({self: {href: uri}, profile: {href: 'http://example.com/profile'}});
     expect(resource.$profile).toBe('http://example.com/profile');
   });
 
@@ -383,15 +383,21 @@ describe('Resource', function () {
       aVar: 'foo',
       bVar: 'joe'
     };
-    resource.$merge({nested: {
-      aVar: null,
-      bVar: 'john',
-      newVar: 'bar'
-    }});
+    resource.$merge({
+      nested: {
+        aVar: null,
+        bVar: 'john',
+        newVar: 'bar'
+      },
+      newNested: {
+        newVar: 'qux'
+      }
+    });
 
     expect(resource.nested.aVar).toBeUndefined();
     expect(resource.nested.bVar).toBe('john');
     expect(resource.nested.newVar).toBe('bar');
+    expect(resource.newNested.newVar).toBe('qux');
   });
 
 });
