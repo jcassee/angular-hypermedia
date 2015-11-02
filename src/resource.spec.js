@@ -255,7 +255,7 @@ describe('Resource', function () {
   });
 
   it('generates info message if path not found', function (done) {
-    spyOn($log, 'info');
+    spyOn($log, 'warn');
     mockContext.get.and.callFake(function (uri) {
       switch (uri) {
         case resource.$uri: return resource;
@@ -266,7 +266,7 @@ describe('Resource', function () {
     });
 
     resource.$loadPaths({nonexistent: {}}).then(function () {
-      expect($log.info).toHaveBeenCalledWith('path not found: nonexistent');
+      expect($log.warn).toHaveBeenCalledWith('path \'nonexistent\' not found for resource http://example.com');
       done();
     });
     $rootScope.$digest();
