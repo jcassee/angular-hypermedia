@@ -265,7 +265,7 @@ describe('Resource', function () {
       return $q.when(resource);
     });
 
-    resource.$loadPaths({nonexistent: {}}).then(function(){
+    resource.$loadPaths({nonexistent: {}}).then(function () {
       expect($log.info).toHaveBeenCalledWith('path not found: nonexistent');
       done();
     });
