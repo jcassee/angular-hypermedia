@@ -6,11 +6,14 @@ describe('ResourceContext', function () {
 
   // Setup
 
-  var $httpBackend, ResourceContext, context, resource;
+  var $httpBackend, $q, ResourceContext, context, errorInterceptor, resource;
+  var problemJson = 'application/problem+json';
 
-  beforeEach(inject(function (_$httpBackend_, _ResourceContext_) {
+  beforeEach(inject(function (_$httpBackend_, _$q_, _ResourceContext_, _errorInterceptor_) {
     $httpBackend = _$httpBackend_;
+    $q = _$q_;
     ResourceContext = _ResourceContext_;
+    errorInterceptor = _errorInterceptor_;
     context = new ResourceContext();
     resource = context.get('http://example.com');
   }));
@@ -22,6 +25,61 @@ describe('ResourceContext', function () {
 
 
   // Tests
+
+  it('registers error handler', function () {
+    var func = function () {};
+    spyOn(errorInterceptor, 'registerErrorHandler');
+
+    ResourceContext.registerErrorHandler(problemJson, func);
+
+    expect(errorInterceptor.registerErrorHandler).toHaveBeenCalledWith(problemJson, func);
+  });
+
+  it('invokes error handler for content type', function () {
+    var spy = jasmine.createSpy('spy').and.callFake(function (response) {
+      return {};
+    });
+    ResourceContext.registerErrorHandler(problemJson, spy);
+
+    context.httpGet(resource);
+    $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})
+      .respond(500, null, {'Content-Type': problemJson});
+    $httpBackend.flush();
+
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('rejects response with error if no matching error handler', function () {
+    var statusText = 'Validation error';
+    var promiseResult = null;
+    var spy = jasmine.createSpy('spy');
+
+    ResourceContext.registerErrorHandler('application/json', spy);
+    context.httpGet(resource).catch(function (result) {
+      promiseResult = result;
+    });
+    $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})
+      .respond(500, {}, {'Content-Type': problemJson}, statusText);
+    $httpBackend.flush();
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(promiseResult.error.message).toBe(statusText);
+    expect(promiseResult.status).toBe(500);
+  });
+
+  it('invokes default error handler for content type "application/vnd+error"', function () {
+    var promiseResult;
+    var msg = 'Validatie fout';
+    context.httpGet(resource).catch(function (result) {
+      promiseResult = result;
+    });
+    $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})
+      .respond(500, {message: msg}, {'Content-Type': 'application/vnd+error'});
+    $httpBackend.flush();
+
+    expect(promiseResult.error).toBeDefined();
+    expect(promiseResult.error.message).toBe(msg);
+  });
 
   it('creates unique resources', function () {
     expect(context.get('http://example.com')).toBe(resource);

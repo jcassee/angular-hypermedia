@@ -2,6 +2,10 @@
 
 angular.module('hypermedia')
 
+  .config(function ($httpProvider) {
+    $httpProvider.interceptors.push('errorInterceptor');
+  })
+
   /**
    * @ngdoc type
    * @name ResourceContext
@@ -10,7 +14,7 @@ angular.module('hypermedia')
    * Context for working with hypermedia resources. The context has methods
    * for making HTTP requests and acts as an identity map.
    */
-  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', function ($http, $log, $q, Resource) {
+  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', 'errorInterceptor', function ($http, $log, $q, Resource, errorInterceptor) {
 
     var busyRequests = 0;
 
@@ -206,6 +210,10 @@ angular.module('hypermedia')
        */
       busyRequests: {get: function () {
         return busyRequests;
+      }},
+
+      registerErrorHandler: {value: function (contentType, handler) {
+        errorInterceptor.registerErrorHandler(contentType, handler);
       }}
     });
 
@@ -228,6 +236,31 @@ angular.module('hypermedia')
       return header ? linkHeaderParser.parse(header) : {};
     }
   }])
+
+  /**
+   * @ngdoc service
+   * @name errorInterceptor
+   * @description
+   *
+   * Intercepts error from server and invokes error handler for content-type,
+   * or default error handler if none is found. Error with message is published
+   * on response under 'error' key.
+   */
+  .factory('errorInterceptor', function ($q) {
+    var handlers;
+    return {
+      'responseError': function (response) {
+        var contentType = response.headers('Content-Type');
+        var handler = handlers[contentType];
+        response.error = (handler ? handler(response) : {message: response.statusText});
+        return $q.reject(response);
+      },
+      'registerErrorHandler': function (contentType, handler) {
+        if (!handlers) handlers = {};
+        handlers[contentType] = handler;
+      }
+    };
+  })
 
 ;
 
