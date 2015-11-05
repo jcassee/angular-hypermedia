@@ -30,6 +30,7 @@ is available that adds offline caching of resources.
 * [Loading resources](#loading-resources)
 * [JSON HAL](#json-hal)
 * [Blob resources](#blob-resources)
+* [Error handlers](#error-handlers)
 
 
 ## Installation
@@ -428,4 +429,42 @@ the server will be stored as a `Blob` in the `data` property of the object.
     person.profilePhotoHref = 'http://example.com/photos/johnwilliams.jpg';
     person.$propRel('profilePhotoHref', BlobResource).$load().then(function (photo) {
       $scope.photoImgSrc = $window.URL.createObjectURL(resource.data);
+    });
+
+
+## Error handlers
+
+Many APIs will use the body of a 4xx or 5xx response to inform the client of
+the type of error. An error media type, such as
+[vnd.error](https://github.com/blongden/vnd.error), can be used as a formal
+description of the problem. The `ResourceContext` HTTP methods can automatically
+convert such responses to an `error` property on the response result.
+
+The vnd.error media type is supported automatically. You can register handlers
+for other media types:
+
+**Example:**
+
+    ResourceContext.registerErrorHandler('text/plain', function (response) {
+      return {message: response.data};
+    });
+
+A handler must return an object with a `message` property containing a
+human-readable error message. It may add other properties. For example, the
+handler for vnd.error will add a `$links` property of error metadata and a
+`$nested` array with the embedded error objects.
+
+The context will return the error object as the `error` property of the
+rejection response.  If no response body is returned or the media type has not
+been registered, `response.error.message` is set to the HTTP response status message.
+
+**Example:**
+
+    person.$get().catch(function (response) {
+      console.log('Error: ' + response.error.message);
+      if (response.error.$nested) {
+        response.error.$nested.forEach(function (error) {
+          console.log('Nested error: ' + error.message;
+        });
+      }
     });
