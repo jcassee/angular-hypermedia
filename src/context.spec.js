@@ -6,14 +6,13 @@ describe('ResourceContext', function () {
 
   // Setup
 
-  var $httpBackend, $q, ResourceContext, context, errorInterceptor, resource;
+  var $httpBackend, $q, ResourceContext, context, resource;
   var problemJson = 'application/problem+json';
 
-  beforeEach(inject(function (_$httpBackend_, _$q_, _ResourceContext_, _errorInterceptor_) {
+  beforeEach(inject(function (_$httpBackend_, _$q_, _ResourceContext_) {
     $httpBackend = _$httpBackend_;
     $q = _$q_;
     ResourceContext = _ResourceContext_;
-    errorInterceptor = _errorInterceptor_;
     context = new ResourceContext();
     resource = context.get('http://example.com');
   }));
@@ -25,15 +24,6 @@ describe('ResourceContext', function () {
 
 
   // Tests
-
-  it('registers error handler', function () {
-    var func = function () {};
-    spyOn(errorInterceptor, 'registerErrorHandler');
-
-    ResourceContext.registerErrorHandler(problemJson, func);
-
-    expect(errorInterceptor.registerErrorHandler).toHaveBeenCalledWith(problemJson, func);
-  });
 
   it('invokes error handler for content type', function () {
     var spy = jasmine.createSpy('spy').and.callFake(function (response) {

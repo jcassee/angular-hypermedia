@@ -96,10 +96,6 @@ angular.module('hypermedia')
 
 angular.module('hypermedia')
 
-  .config(function ($httpProvider) {
-    $httpProvider.interceptors.push('errorInterceptor');
-  })
-
   /**
    * @ngdoc type
    * @name ResourceContext
@@ -108,9 +104,10 @@ angular.module('hypermedia')
    * Context for working with hypermedia resources. The context has methods
    * for making HTTP requests and acts as an identity map.
    */
-  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', 'errorInterceptor', function ($http, $log, $q, Resource, errorInterceptor) {
+  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', function ($http, $log, $q, Resource) {
 
     var busyRequests = 0;
+    var errorHandlers = {};
 
     /**
      * Resource context.
@@ -180,7 +177,7 @@ angular.module('hypermedia')
 
           var updatedResources = resource.$update(response.data, links);
           return self.markSynced(updatedResources, Date.now());
-        }).then(function () {
+        }, handleErrorResponse).then(function () {
           return resource;
         }).finally(function () {
           busyRequests -= 1;
@@ -201,7 +198,7 @@ angular.module('hypermedia')
         var request = updateHttp(resource.$putRequest());
         return $http(request).then(function () {
           return self.markSynced(resource, Date.now());
-        }).then(function () {
+        }, handleErrorResponse).then(function () {
           return resource;
         }).finally(function () {
           busyRequests -= 1;
@@ -223,7 +220,7 @@ angular.module('hypermedia')
         return $http(request).then(function () {
           Resource.prototype.$merge.call(resource, request.data);
           return self.markSynced(resource, Date.now());
-        }).then(function () {
+        }, handleErrorResponse).then(function () {
           return resource;
         }).finally(function () {
           busyRequests -= 1;
@@ -245,7 +242,7 @@ angular.module('hypermedia')
         return $http(request).then(function () {
           delete self.resources[resource.$uri];
           return self.markSynced(resource, null);
-        }).then(function () {
+        }, handleErrorResponse).then(function () {
           return resource;
         }).finally(function () {
           busyRequests -= 1;
@@ -266,7 +263,7 @@ angular.module('hypermedia')
       httpPost: {value: function (resource, data, headers, callback) {
         busyRequests += 1;
         var request = updateHttp(resource.$postRequest(data, headers, callback));
-        return $http(request).finally(function () {
+        return $http(request).catch(handleErrorResponse).finally(function () {
           busyRequests -= 1;
         });
       }},
@@ -308,7 +305,7 @@ angular.module('hypermedia')
       }},
 
       registerErrorHandler: {value: function (contentType, handler) {
-        errorInterceptor.registerErrorHandler(contentType, handler);
+        errorHandlers[contentType] = handler;
       }}
     });
 
@@ -330,23 +327,14 @@ angular.module('hypermedia')
     function parseLinkHeader(header) {
       return header ? linkHeaderParser.parse(header) : {};
     }
-  }])
 
-  .factory('errorInterceptor', function ($q) {
-    var handlers;
-    return {
-      'responseError': function (response) {
-        var contentType = response.headers('Content-Type');
-        var handler = handlers[contentType];
-        response.error = (handler ? handler(response) : {message: response.statusText});
-        return $q.reject(response);
-      },
-      'registerErrorHandler': function (contentType, handler) {
-        if (!handlers) handlers = {};
-        handlers[contentType] = handler;
-      }
-    };
-  })
+    function handleErrorResponse(response) {
+      var contentType = response.headers('Content-Type');
+      var handler = errorHandlers[contentType];
+      response.error = (handler ? handler(response) : {message: response.statusText});
+      return $q.reject(response);
+    }
+  }])
 
 ;
 
@@ -1030,6 +1018,14 @@ angular.module('hypermedia')
     ResourceContext.registerErrorHandler('application/vnd+error', vndErrorHandler);
   })
 
+  /**
+   * @ngdoc type
+   * @name VndError
+   * @description
+   *
+   * VndError represents errors from server with content type 'application/vnd+error',
+   * see: https://github.com/blongden/vnd.error
+   */
   .factory('VndError', function () {
     var HalError = function (data) {
       var self = this;
