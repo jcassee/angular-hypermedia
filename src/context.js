@@ -248,7 +248,7 @@ angular.module('hypermedia')
    * on response under 'error' key.
    */
   .factory('errorInterceptor', function ($q) {
-    var handlers;
+    var handlers = {};
     return {
       'responseError': function (response) {
         var contentType = response.headers('Content-Type');
@@ -257,7 +257,6 @@ angular.module('hypermedia')
         return $q.reject(response);
       },
       'registerErrorHandler': function (contentType, handler) {
-        if (!handlers) handlers = {};
         handlers[contentType] = handler;
       }
     };
