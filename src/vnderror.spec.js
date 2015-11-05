@@ -15,7 +15,7 @@ describe('HalError', function () {
       '_links': {'profile': {'href': 'http://nocarrier.co.uk/profiles/vnd.error/'}},
       '_embedded': {
         'errors': {
-          'message': 'Invalide nummer',
+          'message': 'Invalid number',
           '_links': {'profile': {'href': 'http://nocarrier.co.uk/profiles/vnd.error/'}}
         }
       }
@@ -24,6 +24,7 @@ describe('HalError', function () {
     var error = new VndError(data);
 
     expect(error.message).toBe('Validatie fout');
-    expect(error.errors.length).toBe(1);
+    expect(error.$links.profile).toEqual({'href': 'http://nocarrier.co.uk/profiles/vnd.error/'});
+    expect(error.$nested[0].message).toBe('Invalid number');
   });
 });

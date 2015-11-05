@@ -19,23 +19,23 @@ angular.module('hypermedia')
    * see: https://github.com/blongden/vnd.error
    */
   .factory('VndError', function () {
-    var HalError = function (data) {
-      var self = this;
+    var VndError = function (data) {
       this.message = data.message;
-      this.errors = [];
+      this.$links = data._links || [];
 
-      var embeds = (data._embedded ? data._embedded.errors : undefined);
+      this.$nested = [];
+      var embeds = data._embedded && data._embedded.errors;
       if (embeds) {
         if (!Array.isArray(embeds)) {
           embeds = [embeds];
         }
         embeds.forEach(function (embed) {
-          self.errors.push(new HalError(embed));
-        });
+          this.$nested.push(new VndError(embed));
+        }, this);
       }
     };
 
-    return HalError;
+    return VndError;
   })
 
 
