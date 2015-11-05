@@ -710,22 +710,28 @@ angular.module('hypermedia')
        * @return {Promise} a promise that resolves to the resource once all
        *                   paths have been loaded
        */
-      $loadPaths: {value: function (paths) {
+      $loadPaths: {value: function (paths, path_prefix, root_uri) {
         var self = this;
+        if (!path_prefix) {
+          path_prefix = [];
+          root_uri = self.$uri;
+        }
         return self.$load().then(function () {
           var promises = [];
           Object.keys(paths).forEach(function (key) {
+            var full_path = path_prefix.concat(key);
             var uris = self.$propHref(key);
             if (!uris) uris = self.$linkHref(key);
             if (!uris) {
-              $log.warn('path "' + key + '" not found for resource: ' + self.$uri);
+              $log.warn('Warning while loading path "' + full_path.join('.') + '" from resource "' + root_uri + '": ' +
+                  'property or link "' + key + '" not found on resource "' + self.$uri + '"');
               return;
             }
 
             uris = angular.isArray(uris) ? uris : [uris];
             uris.forEach(function (uri) {
               var related = (typeof uri === 'string') ? self.$context.get(uri) : uri;
-              promises.push(related.$loadPaths(paths[key]));
+              promises.push(related.$loadPaths(paths[key], full_path, root_uri));
             });
           });
           return $q.all(promises);
