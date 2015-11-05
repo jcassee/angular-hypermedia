@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- Add support for error handlers.
+
 ## 0.3.0
 
 - Add self link to Resource.
