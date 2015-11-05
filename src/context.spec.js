@@ -163,6 +163,7 @@ describe('ResourceContext', function () {
     $httpBackend.flush();
     expect(promiseResult).toBe(resource);
     expect(resource.$syncTime).toBeNull();
+    expect(context.get(resource.$uri)).not.toBe(resource);
   });
 
   it('performs HTTP POST requests', function () {

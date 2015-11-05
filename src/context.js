@@ -149,6 +149,7 @@ angular.module('hypermedia')
         busyRequests += 1;
         var request = updateHttp(resource.$deleteRequest());
         return $http(request).then(function () {
+          delete self.resources[resource.$uri];
           return self.markSynced(resource, null);
         }).then(function () {
           return resource;
