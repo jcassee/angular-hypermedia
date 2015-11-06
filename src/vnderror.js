@@ -7,7 +7,7 @@ angular.module('hypermedia')
       return new VndError(response.data);
     };
 
-    ResourceContext.registerErrorHandler('application/vnd+error', vndErrorHandler);
+    ResourceContext.registerErrorHandler('application/vnd.error+json', vndErrorHandler);
   })
 
   /**
