@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- Fix vnd.error media type.
+
 ## 0.4.0
 
 - Add support for error handlers.
