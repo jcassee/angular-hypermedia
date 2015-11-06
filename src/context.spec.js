@@ -57,14 +57,14 @@ describe('ResourceContext', function () {
     expect(promiseResult.status).toBe(500);
   });
 
-  it('invokes default error handler for content type "application/vnd+error"', function () {
+  it('invokes default error handler for content type "application/vnd.error+json"', function () {
     var promiseResult;
     var msg = 'Validatie fout';
     context.httpGet(resource).catch(function (result) {
       promiseResult = result;
     });
     $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})
-      .respond(500, {message: msg}, {'Content-Type': 'application/vnd+error'});
+      .respond(500, {message: msg}, {'Content-Type': 'application/vnd.error+json'});
     $httpBackend.flush();
 
     expect(promiseResult.error).toBeDefined();
