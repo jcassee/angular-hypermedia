@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## 0.4.2
 
 - Fix BlobResource.
 
