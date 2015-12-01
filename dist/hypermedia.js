@@ -875,7 +875,13 @@ angular.module('hypermedia')
         }
 
         // Update resource
-        angular.copy(data, this);
+        Object.keys(this).forEach(function (key) {
+          delete this[key];
+        }, this);
+        Object.keys(data).forEach(function (key) {
+          this[key] = data[key];
+        }, this);
+
         this.$links = {self: {href: this.$uri}};  // Add default self link
         angular.extend(this.$links, links);
 
