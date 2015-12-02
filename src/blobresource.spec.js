@@ -61,7 +61,8 @@ describe('BlobResource', function () {
 
   it('transforms HTTP GET response data into "data" property', function () {
     var request = resource.$getRequest();
-    expect(request.addTransformResponse('test')).toEqual({data: 'test'});
+    var data = createBlob('test');
+    expect(request.addTransformResponse(data)).toEqual({data: data});
   });
 
   it('does not support HTTP PATCH request', function () {

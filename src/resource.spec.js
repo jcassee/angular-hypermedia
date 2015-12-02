@@ -359,6 +359,18 @@ describe('Resource', function () {
     expect(resource.$profile).toBe('http://example.com/profile');
   });
 
+  it('updates special objects correctly', function () {
+    var data = {
+      blob: createBlob('test'),
+      arrayBuffer: new ArrayBuffer(1),
+      document: document
+    };
+    resource.$update(data);
+    expect(resource.blob).toEqual(data.blob);
+    expect(resource.arrayBuffer).toEqual(data.arrayBuffer);
+    expect(resource.document).toEqual(data.document);
+  });
+
   it('requires the href of a link with the "self" relation to equal the resource URI', function () {
     resource.$update({foo: 'bar'}, {self: {href: 'http://example.com'}});
     expect(function () {
@@ -400,4 +412,17 @@ describe('Resource', function () {
     expect(resource.newNested.newVar).toBe('qux');
   });
 
+  function createBlob(data, type) {
+    if (!angular.isArray(data)) data = [data];
+    if (angular.isFunction(Blob)) {
+      return new Blob(data, {type: type});
+    } else {
+      var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
+      var blob = new BlobBuilder();
+      data.forEach(function (elem) {
+        blob.append(elem);
+      });
+      return blob.getBlob(type);
+    }
+  }
 });
