@@ -419,7 +419,9 @@ angular.module('hypermedia')
 
         // Update resource
         Object.keys(this).forEach(function (key) {
-          delete this[key];
+          if (key.indexOf('$$') !== 0) {
+            delete this[key];
+          }
         }, this);
         Object.keys(data).forEach(function (key) {
           this[key] = data[key];

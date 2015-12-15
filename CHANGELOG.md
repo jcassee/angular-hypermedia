@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.3
+
+- Do not remove properties starting with '$$' in $update.
+
 ## 0.4.2
 
 - Fix BlobResource.
