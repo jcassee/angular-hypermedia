@@ -24,7 +24,13 @@ describe('Resource', function () {
     expect(resource.$context).toBe(mockContext);
     expect(resource.$links).toEqual({self: {href: uri}});
     expect(resource.$syncTime).toBeNull();
+    expect(resource.$isSynced).toBeFalsy();
     expect(resource.$profile).toBeNull();
+  });
+
+  it('sets $isSynced if $syncTime is set', function () {
+    resource.$syncTime = Date.now();
+    expect(resource.$isSynced).toBeTruthy();
   });
 
   // Profiles
@@ -357,6 +363,14 @@ describe('Resource', function () {
     expect(resource.foo).toBe('bar');
     expect(resource.$links).toEqual({self: {href: uri}, profile: {href: 'http://example.com/profile'}});
     expect(resource.$profile).toBe('http://example.com/profile');
+  });
+
+  it('does not remove properties starting with "$$" during update', function () {
+    resource.prop = 'foo';
+    resource.$$prop = 'test';
+    resource.$update({prop: 'bar'}, {profile: {href: 'http://example.com/profile'}});
+    expect(resource.prop).toBe('bar');
+    expect(resource.$$prop).toBe('test');
   });
 
   it('updates special objects correctly', function () {

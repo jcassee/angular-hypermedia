@@ -471,6 +471,15 @@ angular.module('hypermedia')
         };
 
         return mergePatch(this, data);
+      }},
+
+      /**
+       * Whether the resource was synchronized with the server.
+       *
+       * @property {boolean}
+       */
+      $isSynced: {get: function () {
+        return !!this.$syncTime;
       }}
     });
 
