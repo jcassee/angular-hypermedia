@@ -359,6 +359,14 @@ describe('Resource', function () {
     expect(resource.$profile).toBe('http://example.com/profile');
   });
 
+  it('does not remove properties starting with "$$" during update', function () {
+    resource.prop = 'foo';
+    resource.$$prop = 'test';
+    resource.$update({prop: 'bar'}, {profile: {href: 'http://example.com/profile'}});
+    expect(resource.prop).toBe('bar');
+    expect(resource.$$prop).toBe('test');
+  });
+
   it('updates special objects correctly', function () {
     var data = {
       blob: createBlob('test'),
