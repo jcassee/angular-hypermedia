@@ -3,6 +3,7 @@
 /**
  * @ngdoc module
  * @name halresource
+ * @version 0.4.3
  * @description
  *
  * This module contains classes and services to work with hypermedia APIs.
