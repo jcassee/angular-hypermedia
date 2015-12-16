@@ -24,7 +24,13 @@ describe('Resource', function () {
     expect(resource.$context).toBe(mockContext);
     expect(resource.$links).toEqual({self: {href: uri}});
     expect(resource.$syncTime).toBeNull();
+    expect(resource.$isSynced).toBeFalsy();
     expect(resource.$profile).toBeNull();
+  });
+
+  it('sets $isSynced if $syncTime is set', function () {
+    resource.$syncTime = Date.now();
+    expect(resource.$isSynced).toBeTruthy();
   });
 
   // Profiles
