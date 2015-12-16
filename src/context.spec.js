@@ -26,7 +26,7 @@ describe('ResourceContext', function () {
   // Tests
 
   it('invokes error handler for content type', function () {
-    var spy = jasmine.createSpy('spy').and.callFake(function (response) {
+    var spy = jasmine.createSpy('spy').and.callFake(function () {
       return {};
     });
     ResourceContext.registerErrorHandler(problemJson, spy);
@@ -58,7 +58,7 @@ describe('ResourceContext', function () {
   });
 
   it('invokes default error handler for content type "application/vnd.error+json"', function () {
-    var promiseResult;
+    var promiseResult = null;
     var msg = 'Validatie fout';
     context.httpGet(resource).catch(function (result) {
       promiseResult = result;
