@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+- Add Resource.$isSynced.
+
 ## 0.4.3
 
 - Do not remove properties starting with '$$' in $update.
