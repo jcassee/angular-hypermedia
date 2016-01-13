@@ -156,6 +156,20 @@ angular.module('hypermedia')
       }},
 
       /**
+       * Refresh all resources in the context.
+       */
+      refresh: {value: function () {
+        var promises = [];
+        Object.keys(this.resources).forEach(function (key) {
+          var resource = this.resources[key];
+          if (resource.$isSynced) {
+            promises.push(resource.$get());
+          }
+        }, this);
+        return $q.all(promises);
+      }},
+
+      /**
        * Perform a HTTP GET request on a resource.
        *
        * @function
