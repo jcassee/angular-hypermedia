@@ -156,6 +156,25 @@ angular.module('hypermedia')
       }},
 
       /**
+       * Refresh all resources in the context by issuing a HTTP GET request on them.
+       *
+       * @function
+       * @returns {Promise} Returns a promise that will be resolved with an array of all resources
+       * that were refreshed. If any of the requests fail, the promise will be rejected with the response.
+       *
+       */
+      refresh: {value: function () {
+        var promises = [];
+        Object.keys(this.resources).forEach(function (key) {
+          var resource = this.resources[key];
+          if (resource.$isSynced) {
+            promises.push(resource.$get());
+          }
+        }, this);
+        return $q.all(promises);
+      }},
+
+      /**
        * Perform a HTTP GET request on a resource.
        *
        * @function

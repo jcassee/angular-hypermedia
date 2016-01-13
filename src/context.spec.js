@@ -192,4 +192,13 @@ describe('ResourceContext', function () {
     $httpBackend.flush();
     expect(ResourceContext.busyRequests).toBe(0);
   });
+
+  it('gets synced resources on refresh', function () {
+    resource.$syncTime = 1;
+    $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})
+      .respond('{"name": "John"}', {'Content-Type': 'application/json'});
+    context.refresh();
+    $httpBackend.flush();
+    expect(resource.name).toBe('John');
+  });
 });
