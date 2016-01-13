@@ -157,6 +157,10 @@ angular.module('hypermedia')
 
       /**
        * Refresh all resources in the context.
+       *
+       * @function
+       * @returns {Promise} a single promise that will be resolved with an array/hash of values.
+       *
        */
       refresh: {value: function () {
         var promises = [];
