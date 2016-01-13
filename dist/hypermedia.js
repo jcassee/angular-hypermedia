@@ -156,21 +156,21 @@ angular.module('hypermedia')
       }},
 
       /**
-       * Refresh all resources in the context by issuing a HTTP GET request on them.
+       * Refresh all synchronized resources in the context by issuing a HTTP GET request on them.
        *
        * @function
-       * @returns {Promise} Returns a promise that will be resolved with an array of all resources
-       * that were refreshed. If any of the requests fail, the promise will be rejected with the response.
+       * @returns {Promise} a promise that will be resolved with an array of all resources that
+       *          were refreshed. If any of the requests fails, the promise will be rejected with
+       *          the response of that request.
        *
        */
       refresh: {value: function () {
         var promises = [];
-        Object.keys(this.resources).forEach(function (key) {
-          var resource = this.resources[key];
+        angular.forEach(this.resources, function (resource) {
           if (resource.$isSynced) {
             promises.push(resource.$get());
           }
-        }, this);
+        });
         return $q.all(promises);
       }},
 

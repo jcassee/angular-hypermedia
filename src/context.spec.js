@@ -195,10 +195,12 @@ describe('ResourceContext', function () {
 
   it('gets synced resources on refresh', function () {
     resource.$syncTime = 1;
+    var resource2 = context.get('http://example.com/other');
     $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})
       .respond('{"name": "John"}', {'Content-Type': 'application/json'});
     context.refresh();
     $httpBackend.flush();
     expect(resource.name).toBe('John');
+    expect(resource2.$isSynced).toBe(false);
   });
 });
