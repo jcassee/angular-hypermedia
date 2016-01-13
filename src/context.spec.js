@@ -99,7 +99,7 @@ describe('ResourceContext', function () {
     $httpBackend.flush();
     expect(promiseResult).toBe(resource);
     expect(resource.name).toBe('John');
-    expect(resource.$syncTime / 10).toBeCloseTo(Date.now() / 10, 0);
+    expect(resource.$syncTime / 100).toBeCloseTo(Date.now() / 100, 0);
   });
 
   it('converts content type profile parameter to link', function () {
@@ -113,7 +113,7 @@ describe('ResourceContext', function () {
     expect(promiseResult).toBe(resource);
     expect(resource.name).toBe('John');
     expect(resource.$links.profile).toEqual({href: 'http://example.com/profile'});
-    expect(resource.$syncTime / 10).toBeCloseTo(Date.now() / 10, 0);
+    expect(resource.$syncTime / 100).toBeCloseTo(Date.now() / 100, 0);
   });
 
   it('performs HTTP PUT requests', function () {
@@ -126,7 +126,7 @@ describe('ResourceContext', function () {
         .respond(204);
     $httpBackend.flush();
     expect(promiseResult).toBe(resource);
-    expect(resource.$syncTime / 10).toBeCloseTo(Date.now() / 10, 0);
+    expect(resource.$syncTime / 100).toBeCloseTo(Date.now() / 100, 0);
   });
 
   it('performs HTTP PATCH requests', function () {
@@ -140,7 +140,7 @@ describe('ResourceContext', function () {
         .respond(204);
     $httpBackend.flush();
     expect(promiseResult).toBe(resource);
-    expect(resource.$syncTime / 10).toBeCloseTo(Date.now() / 10, 0);
+    expect(resource.$syncTime / 100).toBeCloseTo(Date.now() / 100, 0);
   });
 
   it('performs HTTP DELETE requests', function () {
