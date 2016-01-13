@@ -199,5 +199,6 @@ describe('ResourceContext', function () {
       .respond('{"name": "John"}', {'Content-Type': 'application/json'});
     context.refresh();
     $httpBackend.flush();
+    expect(resource.name).toBe('John');
   });
 });
