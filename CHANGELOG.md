@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+- Add Context.refresh.
+
 ## 0.5.0
 
 - Add Resource.$isSynced.
