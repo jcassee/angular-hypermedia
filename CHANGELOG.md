@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0
+
+- Add extra properties in vnd.error objects.
+
 ## 0.6.0
 
 - Add Context.refresh.

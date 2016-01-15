@@ -451,12 +451,13 @@ for other media types:
 
 A handler must return an object with a `message` property containing a
 human-readable error message. It may add other properties. For example, the
-handler for vnd.error will add 
+handler for vnd.error will add the following properties:
 
-* `logref`
-* `path`
-* `$links` property of error metadata
-* `$nested` array with the embedded error objects.
+* `message`: the error message
+* `logref`: an error identifier
+* `path`: a pointer to the JSON field relevant to the error
+* `$links`: hyperlinks to error metadata
+* `$nested`: embedded error objects
 
 The context will return the error object as the `error` property of the
 rejection response.  If no response body is returned or the media type has not
