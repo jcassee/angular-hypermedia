@@ -451,8 +451,12 @@ for other media types:
 
 A handler must return an object with a `message` property containing a
 human-readable error message. It may add other properties. For example, the
-handler for vnd.error will add a `$links` property of error metadata and a
-`$nested` array with the embedded error objects.
+handler for vnd.error will add 
+
+* `logref`
+* `path`
+* `$links` property of error metadata
+* `$nested` array with the embedded error objects.
 
 The context will return the error object as the `error` property of the
 rejection response.  If no response body is returned or the media type has not
@@ -462,6 +466,8 @@ been registered, `response.error.message` is set to the HTTP response status mes
 
     person.$get().catch(function (response) {
       console.log('Error: ' + response.error.message);
+      console.log('Logref: ' + response.error.logref);
+      console.log('Path: ' + response.error.path);
       if (response.error.$nested) {
         response.error.$nested.forEach(function (error) {
           console.log('Nested error: ' + error.message;

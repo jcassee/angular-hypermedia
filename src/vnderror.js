@@ -21,6 +21,8 @@ angular.module('hypermedia')
   .factory('VndError', function () {
     var VndError = function (data) {
       this.message = data.message;
+      this.logref = data.logref;
+      this.path = data.path;
       this.$links = data._links || [];
 
       this.$nested = [];
