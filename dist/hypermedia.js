@@ -3,7 +3,7 @@
 /**
  * @ngdoc module
  * @name halresource
- * @version 0.5.0
+ * @version 0.7.1
  * @description
  *
  * This module contains classes and services to work with hypermedia APIs.
@@ -1066,6 +1066,8 @@ angular.module('hypermedia')
   .factory('VndError', function () {
     var VndError = function (data) {
       this.message = data.message;
+      this.logref = data.logref;
+      this.path = data.path;
       this.$links = data._links || [];
 
       this.$nested = [];
