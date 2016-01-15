@@ -168,7 +168,8 @@ The PATCH request method updates a resources by only sending a "diff" of the
 state. `Resource` uses [JSON Merge Patch](https://tools.ietf.org/html/rfc7386).
 It is a very simple JSON patch format suitable for describing modifications to
 JSON documents that primarily use objects for their structure and do not make
-use of explicit `null` values. Subclasses may choose to support other formats.
+use of explicit `null` values. Subclasses of `Resource` may choose to support
+other formats by overriding the `$putRequest` method.
 
 The `$patch` method accepts a mapping of (new or existing) properties to updated
 values; mapping a property to `null` will delete the property. Objects are
@@ -239,8 +240,8 @@ add the factory as the last parameter.
 
 A reference can also be a [URI Template](http://tools.ietf.org/html/rfc6570),
 containing parameters that need to be substituted before it can be resolved. The
-`$propRel` accepts a second argument of variables (a mapping name -> value) to
-resolve a URI Template reference.
+`$propRel` accepts a second argument of variables (a mapping of names to values)
+to resolve a URI Template reference.
 
 **Example:**
 
@@ -263,7 +264,7 @@ links. Links are returned by the server as
 
 The `$links` property is a mapping of relations to link objects. A link object
 has an `href` property containing the relation target URI. Other properties are
-link attributes as listed in the [RFC](http://tools.ietf.org/html/rfc5988).
+link attributes as [listed in the RFC](http://tools.ietf.org/html/rfc5988).
 
 Relations are either keywords from the [IANA
 list](http://www.iana.org/assignments/link-relations/link-relations.xhtml) or
