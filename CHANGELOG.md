@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+
+- Build distribution. (Last release had old files in dist.)
+
 ## 0.7.0
 
 - Add extra properties in vnd.error objects.
