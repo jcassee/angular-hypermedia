@@ -66,7 +66,7 @@ This could be an implementation of the controller:
         });
 
         $scope.followRel = function (rel) {
-          $scope.page.$linkRel(rel).then(function (page) {
+          $scope.page.$linkRel(rel).$get().then(function (page) {
             $scope.page = page;
           })
         };
