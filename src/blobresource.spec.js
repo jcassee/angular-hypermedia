@@ -40,7 +40,7 @@ describe('BlobResource', function () {
   });
 
   it('creates HTTP PUT request using the data media type', function () {
-    resource.data = createBlob('test', 'text/plain');
+    resource.data = new Blob(['test'], {type: 'text/plain'});
     expect(resource.$putRequest()).toEqual({
       method: 'put',
       url: 'http://example.com',
@@ -50,7 +50,7 @@ describe('BlobResource', function () {
   });
 
   it('creates HTTP PUT request using binary/octet-stream media type if data has no type', function () {
-    resource.data = createBlob('test');
+    resource.data = new Blob(['test']);
     expect(resource.$putRequest()).toEqual({
       method: 'put',
       url: 'http://example.com',
@@ -61,25 +61,11 @@ describe('BlobResource', function () {
 
   it('transforms HTTP GET response data into "data" property', function () {
     var request = resource.$getRequest();
-    var data = createBlob('test');
+    var data = new Blob(['test']);
     expect(request.addTransformResponse(data)).toEqual({data: data});
   });
 
   it('does not support HTTP PATCH request', function () {
     expect(resource.$patchRequest).toThrowError('BlobResource does not support the PATCH method');
   });
-
-  function createBlob(data, type) {
-    if (!angular.isArray(data)) data = [data];
-    if (angular.isFunction(Blob)) {
-      return new Blob(data, {type: type});
-    } else {
-      var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
-      var blob = new BlobBuilder();
-      data.forEach(function (elem) {
-        blob.append(elem);
-      });
-      return blob.getBlob(type);
-    }
-  }
 });

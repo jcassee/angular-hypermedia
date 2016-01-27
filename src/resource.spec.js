@@ -375,7 +375,7 @@ describe('Resource', function () {
 
   it('updates special objects correctly', function () {
     var data = {
-      blob: createBlob('test'),
+      blob: new Blob(['test']),
       arrayBuffer: new ArrayBuffer(1),
       document: document
     };
@@ -425,18 +425,4 @@ describe('Resource', function () {
     expect(resource.nested.newVar).toBe('bar');
     expect(resource.newNested.newVar).toBe('qux');
   });
-
-  function createBlob(data, type) {
-    if (!angular.isArray(data)) data = [data];
-    if (angular.isFunction(Blob)) {
-      return new Blob(data, {type: type});
-    } else {
-      var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
-      var blob = new BlobBuilder();
-      data.forEach(function (elem) {
-        blob.append(elem);
-      });
-      return blob.getBlob(type);
-    }
-  }
 });

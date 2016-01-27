@@ -21,7 +21,8 @@
     "karma": "^0.13",
     "karma-coverage": "^0.4",
     "karma-jasmine": "^0.3",
-    "karma-phantomjs-launcher": "^0.2"
+    "karma-phantomjs-launcher": "^0.2",
+    "phantomjs": "^2.1"
   },
   "scripts": {
     "postinstall": "bower install",
