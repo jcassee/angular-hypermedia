@@ -3,7 +3,7 @@
 /**
  * @ngdoc module
  * @name halresource
- * @version 0.7.1
+ * @version 0.7.2
  * @description
  *
  * This module contains classes and services to work with hypermedia APIs.
@@ -901,7 +901,9 @@ angular.module('hypermedia')
           }
         }, this);
         Object.keys(data).forEach(function (key) {
-          this[key] = data[key];
+          if (key.indexOf('$$') !== 0) {
+            this[key] = data[key];
+          }
         }, this);
 
         this.$links = {self: {href: this.$uri}};  // Add default self link

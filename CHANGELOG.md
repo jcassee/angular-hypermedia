@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2
+
+- Fix bug in Resource.$update when using another resource object.
+
 ## 0.7.1
 
 - Build distribution. (Last release had old files in dist.)

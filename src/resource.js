@@ -424,7 +424,9 @@ angular.module('hypermedia')
           }
         }, this);
         Object.keys(data).forEach(function (key) {
-          this[key] = data[key];
+          if (key.indexOf('$$') !== 0) {
+            this[key] = data[key];
+          }
         }, this);
 
         this.$links = {self: {href: this.$uri}};  // Add default self link
