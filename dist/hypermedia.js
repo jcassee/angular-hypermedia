@@ -51,10 +51,11 @@ angular.module('hypermedia')
        * Create a $http GET request configuration object.
        *
        * @function
+       * @param {object} [params] additional GET parameters
        * @returns {object}
        */
-      $getRequest: {value: function () {
-        return {
+      $getRequest: {value: function (params) {
+        var config = {
           method: 'get',
           url: this.$uri,
           headers: {'Accept': '*/*'},
@@ -63,6 +64,8 @@ angular.module('hypermedia')
             return {data: data};
           }
         };
+        if (params) config.params = params;
+        return config;
       }},
 
       /**
@@ -179,13 +182,14 @@ angular.module('hypermedia')
        *
        * @function
        * @param {Resource} resource
+       * @param {object} [params] additional GET parameters
        * @returns a promise that is resolved to the resource
        * @see Resource#$getRequest
        */
-      httpGet: {value: function (resource) {
+      httpGet: {value: function (resource, params) {
         var self = this;
         busyRequests += 1;
-        var request = updateHttp(resource.$getRequest());
+        var request = updateHttp(resource.$getRequest(params));
         return $http(request).then(function (response) {
           var links = parseLinkHeader(response.headers('Link'));
 
@@ -400,14 +404,17 @@ angular.module('hypermedia')
        * Create a $http GET request configuration object.
        *
        * @function
+       * @param {object} [params] additional GET parameters
        * @returns {object}
        */
-      $getRequest: {value: function () {
-        return {
+      $getRequest: {value: function (params) {
+        var config = {
           method: 'get',
           url: this.$uri,
           headers: {'Accept': 'application/hal+json'}
         };
+        if (params) config.params = params;
+        return config;
       }},
 
       /**
@@ -753,24 +760,30 @@ angular.module('hypermedia')
        * Create a $http GET request configuration object.
        *
        * @function
+       * @param {object} [params] additional GET parameters
        * @returns {object}
        */
-      $getRequest: {value: function () {
-        return {
+      $getRequest: {value: function (params) {
+        var config = {
           method: 'get',
           url: this.$uri,
           headers: {'Accept': 'application/json'}
         };
+        if (params) config.params = params;
+        return config;
       }},
 
       /**
        * Perform an HTTP GET request.
        *
        * @function
+       * @param {object} [params] additional GET parameters
        * @returns a promise that is resolved to the resource
        */
-      $get: {value: function () {
-        return this.$context.httpGet(this);
+      $get: {value: function (params) {
+        var args = [this];
+        if (params) args.push(params);
+        return this.$context.httpGet.apply(this.$context, args);
       }},
 
       /**

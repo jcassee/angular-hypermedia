@@ -276,24 +276,30 @@ angular.module('hypermedia')
        * Create a $http GET request configuration object.
        *
        * @function
+       * @param {object} [params] additional GET parameters
        * @returns {object}
        */
-      $getRequest: {value: function () {
-        return {
+      $getRequest: {value: function (params) {
+        var config = {
           method: 'get',
           url: this.$uri,
           headers: {'Accept': 'application/json'}
         };
+        if (params) config.params = params;
+        return config;
       }},
 
       /**
        * Perform an HTTP GET request.
        *
        * @function
+       * @param {object} [params] additional GET parameters
        * @returns a promise that is resolved to the resource
        */
-      $get: {value: function () {
-        return this.$context.httpGet(this);
+      $get: {value: function (params) {
+        var args = [this];
+        if (params) args.push(params);
+        return this.$context.httpGet.apply(this.$context, args);
       }},
 
       /**

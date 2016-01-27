@@ -39,6 +39,18 @@ describe('BlobResource', function () {
     });
   });
 
+  it('creates HTTP GET request with additional GET parameters', function () {
+    var params = {name: 'John'};
+    expect(resource.$getRequest(params)).toEqual({
+      method: 'get',
+      url: 'http://example.com',
+      headers: {Accept: '*/*'},
+      responseType: 'blob',
+      params: params,
+      addTransformResponse: jasmine.any(Function)
+    });
+  });
+
   it('creates HTTP PUT request using the data media type', function () {
     resource.data = new Blob(['test'], {type: 'text/plain'});
     expect(resource.$putRequest()).toEqual({
