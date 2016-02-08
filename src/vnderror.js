@@ -2,13 +2,13 @@
 
 angular.module('hypermedia')
 
-  .run(function ($q, ResourceContext, VndError) {
+  .run(['$q', 'ResourceContext', 'VndError',function ($q, ResourceContext, VndError) {
     var vndErrorHandler = function (response) {
       return new VndError(response.data);
     };
 
     ResourceContext.registerErrorHandler('application/vnd.error+json', vndErrorHandler);
-  })
+  }])
 
   /**
    * @ngdoc type
