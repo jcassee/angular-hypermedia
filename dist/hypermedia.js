@@ -3,7 +3,7 @@
 /**
  * @ngdoc module
  * @name halresource
- * @version 0.7.2
+ * @version 0.7.3
  * @description
  *
  * This module contains classes and services to work with hypermedia APIs.
@@ -1049,13 +1049,13 @@ angular.module('hypermedia')
 
 angular.module('hypermedia')
 
-  .run(function ($q, ResourceContext, VndError) {
+  .run(['$q', 'ResourceContext', 'VndError',function ($q, ResourceContext, VndError) {
     var vndErrorHandler = function (response) {
       return new VndError(response.data);
     };
 
     ResourceContext.registerErrorHandler('application/vnd.error+json', vndErrorHandler);
-  })
+  }])
 
   /**
    * @ngdoc type

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.3
+
+- Annotate vnd.error module dependency injection. (Nikolay Gerzhan)
+
 ## 0.7.2
 
 - Fix bug in Resource.$update when using another resource object.
