@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.4
+
+- Fix package.json for use as an npm module.
+
 ## 0.7.3
 
 - Annotate vnd.error module dependency injection. (Nikolay Gerzhan)
