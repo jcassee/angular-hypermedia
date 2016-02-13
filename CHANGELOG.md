@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.5
+
+- Fix tests.
+
 ## 0.7.4
 
 - Fix package.json for use as an npm module.
