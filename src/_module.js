@@ -8,4 +8,4 @@
  *
  * This module contains classes and services to work with hypermedia APIs.
  */
-angular.module('hypermedia', []);
+angular.module('angular-hypermedia', []);
