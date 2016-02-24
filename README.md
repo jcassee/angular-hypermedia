@@ -46,6 +46,28 @@ Then include it (and its dependencies) in your HTML page.
     <script src="bower_components/mediatype-parser/dist/mediatype-parser-browser.js"></script>
     <script src="bower_components/uri-templates/uri-templates.js"></script>
 
+Alternatively, install using NPM
+
+    npm install angular-hypermedia --save
+
+## Webpack integration
+
+You can use Webpack ProvidePlugin to integrate dependencies as follows:
+  
+    new webpack.ProvidePlugin({
+      mediaTypeParser: 'mediatype-parser',
+      linkHeaderParser: 'linkheader-parser',
+      UriTemplate: 'uri-templates'
+    }),
+
+Since [mediatype-parser](https://github.com/jcassee/mediatype-parser) and [linkheader-parser](https://github.com/jcassee/linkheader-parser) releases `v0.1.2` you also need to add aliases to your Webpack configuration:
+
+    resolve: {
+      ...
+      alias: {
+        'mediatype-parser': 'mediatype-parser/dist/mediatype-parser-node.js',
+        'linkheader-parser': 'linkheader-parser/dist/linkheader-parser-node.js'
+      }
 
 ## Quickstart
 
