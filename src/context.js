@@ -143,7 +143,7 @@ angular.module('hypermedia')
         busyRequests += 1;
         var request = updateHttp(resource.$patchRequest(data));
         return $http(request).then(function () {
-          Resource.prototype.$merge.call(resource, request.data);
+          resource.$merge(request.data);
           return self.markSynced(resource, Date.now());
         }, handleErrorResponse).then(function () {
           return resource;
