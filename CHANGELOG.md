@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.6
+
+- Use Resource.$merge in Context.httpPatch. (Sergiy Pereverziev)
+
 ## 0.7.5
 
 - Fix tests.

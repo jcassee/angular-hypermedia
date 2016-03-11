@@ -3,7 +3,7 @@
 /**
  * @ngdoc module
  * @name halresource
- * @version 0.7.5
+ * @version 0.7.6
  * @description
  *
  * This module contains classes and services to work with hypermedia APIs.
@@ -238,7 +238,7 @@ angular.module('hypermedia')
         busyRequests += 1;
         var request = updateHttp(resource.$patchRequest(data));
         return $http(request).then(function () {
-          Resource.prototype.$merge.call(resource, request.data);
+          resource.$merge(request.data);
           return self.markSynced(resource, Date.now());
         }, handleErrorResponse).then(function () {
           return resource;
