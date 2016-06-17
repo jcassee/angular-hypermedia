@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/jcassee/angular-hypermedia.svg?branch=master)](https://travis-ci.org/jcassee/angular-hypermedia)
 [![Coverage Status](https://coveralls.io/repos/jcassee/angular-hypermedia/badge.svg?branch=master&service=github)](https://coveralls.io/github/jcassee/angular-hypermedia?branch=master)
 [![Bower](https://img.shields.io/bower/v/angular-hypermedia.svg)](http://bower.io/search/?q=angular-hypermedia)
+[![npm](https://img.shields.io/npm/v/angular-hypermedia.svg)](https://www.npmjs.com/package/angular-hypermedia)
+[![npm downloads](https://img.shields.io/npm/dm/angular-hypermedia.svg)](https://www.npmjs.com/package/angular-hypermedia)
 [![License](https://img.shields.io/github/license/jcassee/angular-hypermedia.svg)](https://github.com/jcassee/angular-hypermedia/blob/master/LICENSE.md)
 
 
