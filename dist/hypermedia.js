@@ -162,7 +162,7 @@ angular.module('hypermedia')
        * or if none was passsed, against current time millis.
        *
        * @function
-       * @param ts the timestamp to check against
+       * @param {number} ts the timestamp to check against
        * @returns {Promise} a promise that will be resolved with an array of all resources that
        *          were refreshed. If any of the requests fails, the promise will be rejected with
        *          the response of that request.
