@@ -157,8 +157,12 @@ angular.module('hypermedia')
 
       /**
        * Refresh all synchronized resources in the context by issuing a HTTP GET request on them.
+       * GET requests are only issued for resources that are stale. Staleness is defined by
+       * checking the resource's syncTime against the timestamp that is passed as argument,
+       * or if none was passsed, against current time millis.
        *
        * @function
+       * @param ts the timestamp to check against
        * @returns {Promise} a promise that will be resolved with an array of all resources that
        *          were refreshed. If any of the requests fails, the promise will be rejected with
        *          the response of that request.
@@ -679,9 +683,11 @@ angular.module('hypermedia')
       }},
 
       /**
-       * Perform an HTTP GET request if the resource is not synchronized.
+       * Perform an HTTP GET request if the resource is not synchronized or if
+       * the resource was synced before timestamp passed as argument.
        *
        * @function
+       * @param {number} ts timestamp to check against
        * @returns a promise that is resolved to the resource
        * @see Resource#$syncTime
        */

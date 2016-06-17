@@ -201,9 +201,11 @@ angular.module('hypermedia')
       }},
 
       /**
-       * Perform an HTTP GET request if the resource is not synchronized.
+       * Perform an HTTP GET request if the resource is not synchronized or if
+       * the resource was synced before timestamp passed as argument.
        *
        * @function
+       * @param {number} ts timestamp to check against
        * @returns a promise that is resolved to the resource
        * @see Resource#$syncTime
        */

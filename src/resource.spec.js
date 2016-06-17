@@ -237,7 +237,7 @@ describe('Resource', function () {
   });
 
   it('does not load a resource again if it has been synced and not stale', function () {
-    resource.$syncTime = Date.now();
+    resource.$syncTime = new Date('2016-01-02');
     resource.$load(new Date('2016-01-01').getTime());
     expect(mockContext.httpGet).not.toHaveBeenCalled();
   });
