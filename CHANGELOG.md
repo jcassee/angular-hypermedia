@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.1
+
+- Fix gulp build.
+
 ## 0.8.0
 
 - Add `ts` argument to `Resource.$load` and `Resource.$loadPaths`.
