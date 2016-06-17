@@ -237,7 +237,7 @@ describe('Resource', function () {
   });
 
   it('does not load a resource again if it has been synced and not stale', function () {
-    resource.$syncTime = new Date('2016-01-02');
+    resource.$syncTime = new Date('2016-01-02').getTime();
     resource.$load(new Date('2016-01-01').getTime());
     expect(mockContext.httpGet).not.toHaveBeenCalled();
   });
@@ -267,6 +267,37 @@ describe('Resource', function () {
       expect(mockContext.httpGet).toHaveBeenCalledWith(resource1);
       expect(mockContext.httpGet).toHaveBeenCalledWith(resource2);
       expect(mockContext.httpGet).toHaveBeenCalledWith(resource3);
+      done();
+    });
+    $rootScope.$digest();
+  });
+
+  it('loads paths of related resources with a timestamp', function (done) {
+    var resource1 = new Resource('http://example.com/1', mockContext);
+    var resource2 = new Resource('http://example.com/2', mockContext);
+    mockContext.get.and.callFake(function (uri) {
+      switch (uri) {
+        case resource.$uri:  return resource;
+        case resource1.$uri: return resource1;
+        case resource2.$uri: return resource2;
+      }
+    });
+    mockContext.httpGet.and.callFake(function (resource) {
+      return $q.when(resource);
+    });
+
+    resource.$links.step1 = {href: resource1.$uri};
+    resource1.step2 = resource2.$uri;
+
+    var ts1 = new Date('2016-01-01').getTime();
+    var ts2 = new Date('2016-01-02').getTime();
+    resource.$syncTime = ts1;
+    resource1.$syncTime = ts2;
+    // resource2 is not synced
+
+    resource.$loadPaths({step1: {}}, ts2).then(function () {
+      expect(mockContext.httpGet).toHaveBeenCalledWith(resource);
+      expect(mockContext.httpGet).toHaveBeenCalledWith(resource2);
       done();
     });
     $rootScope.$digest();
