@@ -29,7 +29,7 @@
     "karma-coverage": "^0.4",
     "karma-jasmine": "^0.3",
     "karma-phantomjs2-launcher": "^0.5",
-    "phantomjs": "^2.1"
+    "phantomjs-prebuilt": "^2.1"
   },
   "scripts": {
     "pretest": "gulp",
