@@ -3,7 +3,7 @@
 /**
  * @ngdoc module
  * @name halresource
- * @version 0.7.6
+ * @version 0.8.0
  * @description
  *
  * This module contains classes and services to work with hypermedia APIs.
@@ -687,7 +687,7 @@ angular.module('hypermedia')
        * the resource was synced before timestamp passed as argument.
        *
        * @function
-       * @param {number} ts timestamp to check against
+       * @param {number} [ts] timestamp to check against
        * @returns a promise that is resolved to the resource
        * @see Resource#$syncTime
        */
@@ -723,16 +723,18 @@ angular.module('hypermedia')
        * @function
        * @param {Resource} resource
        * @param {object} paths
+       * @param {number} [ts] timestamp to check against
        * @return {Promise} a promise that resolves to the resource once all
        *                   paths have been loaded
+       * @see {@link #$load}
        */
-      $loadPaths: {value: function (paths, path_prefix, root_uri) {
+      $loadPaths: {value: function (paths, ts, path_prefix, root_uri) {
         var self = this;
         if (!path_prefix) {
           path_prefix = [];
           root_uri = self.$uri;
         }
-        return self.$load().then(function () {
+        return self.$load(ts).then(function () {
           var promises = [];
           Object.keys(paths).forEach(function (key) {
             var full_path = path_prefix.concat(key);
@@ -747,7 +749,7 @@ angular.module('hypermedia')
             uris = angular.isArray(uris) ? uris : [uris];
             uris.forEach(function (uri) {
               var related = (typeof uri === 'string') ? self.$context.get(uri) : uri;
-              promises.push(related.$loadPaths(paths[key], full_path, root_uri));
+              promises.push(related.$loadPaths(paths[key], ts, full_path, root_uri));
             });
           });
           return $q.all(promises);

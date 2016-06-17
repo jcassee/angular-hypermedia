@@ -27,7 +27,7 @@ gulp.task('default', function () {
     .pipe(jscs.reporter())
     .pipe(jscs.reporter('fail'))
     // build
-    .pipe(ignore.exclude('*.spec.js'))
+    .pipe(ignore.exclude('**/*.spec.js'))
     .pipe(concat(path.basename(dist)))
     .pipe(replace(/@version \S+/, '@version ' + pkg.version))
     .pipe(gulp.dest(distDir));
