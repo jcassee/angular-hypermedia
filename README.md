@@ -29,7 +29,7 @@ is available that adds offline caching of resources.
 * [URI Templates](#uri-templates)
 * [Links](#links)
 * [Profiles](#profiles)
-* [Loading resources](#loading-resources)
+* [Loading and refreshing resources](#loading-and-refreshing-resources)
 * [JSON HAL](#json-hal)
 * [Blob resources](#blob-resources)
 * [Error handlers](#error-handlers)
@@ -355,7 +355,7 @@ The profile is automatically set if the response of a GET request contains
 either a profile link or the profile parameter in the Content-Type header.
 
 
-## Loading resources
+## Loading and refreshing resources
 
 Because different relations may point to the same URI, just calling `$get` on
 all followed resources risks issuing GET requests for the same resource multiple
@@ -408,6 +408,23 @@ Loading related resources is usually done in resolve functions of a URL route.
         }
       }
     });
+
+It is often useful to make sure the resource data is not too old. You can pass a
+timestamp to the `$load` and `$loadPaths` methods to issue a GET request if the
+last synchronization was before that time.
+
+**Example:**
+
+    var oneHourAgo = Date.now() - 60*60*1000;
+    movie.$load(oneHourAgo);
+    person.$loadPaths({'car': {}}, oneHourAgo);
+
+You can also refresh all synchronized resources in a context using the `refresh`
+method.
+
+**Example:**
+
+    context.refresh()
 
 
 ## JSON HAL
