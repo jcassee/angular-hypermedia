@@ -224,9 +224,21 @@ describe('Resource', function () {
     expect(mockContext.httpGet).toHaveBeenCalledWith(resource);
   });
 
+  it('loads a resource if it has been synced but stale', function () {
+    resource.$syncTime = new Date('2016-01-01').getTime();
+    resource.$load(Date.now());
+    expect(mockContext.httpGet).toHaveBeenCalledWith(resource);
+  });
+
   it('does not load a resource again if it has been synced', function () {
     resource.$syncTime = Date.now();
     resource.$load();
+    expect(mockContext.httpGet).not.toHaveBeenCalled();
+  });
+
+  it('does not load a resource again if it has been synced and not stale', function () {
+    resource.$syncTime = new Date('2016-01-02');
+    resource.$load(new Date('2016-01-01').getTime());
     expect(mockContext.httpGet).not.toHaveBeenCalled();
   });
 
