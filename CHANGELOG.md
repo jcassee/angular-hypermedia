@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.8.0
+
+- Add `ts` argument to `Resource.$load` and `Resource.$loadPaths`.
+
 ## 0.7.6
 
-- Use Resource.$merge in Context.httpPatch. (Sergiy Pereverziev)
+- Use `Resource.$merge` in `Context.httpPatch`. (Sergiy Pereverziev)
 
 ## 0.7.5
 
@@ -10,7 +14,7 @@
 
 ## 0.7.4
 
-- Fix package.json for use as an npm module.
+- Fix `package.json` for use as an npm module.
 
 ## 0.7.3
 
@@ -18,7 +22,7 @@
 
 ## 0.7.2
 
-- Fix bug in Resource.$update when using another resource object.
+- Fix bug in `Resource.$update` when using another resource object.
 
 ## 0.7.1
 
@@ -34,7 +38,7 @@
 
 ## 0.5.0
 
-- Add Resource.$isSynced.
+- Add `Resource.$isSynced`.
 
 ## 0.4.3
 
@@ -42,7 +46,7 @@
 
 ## 0.4.2
 
-- Fix BlobResource.
+- Fix `BlobResource`.
 
 ## 0.4.1
 
@@ -54,13 +58,13 @@
 
 ## 0.3.0
 
-- Add self link to Resource.
-- Log non-existent paths in Resource.$loadPaths.
-- Fix Resource.$patch.
+- Add self link to `Resource`.
+- Log non-existent paths in `Resource.$loadPaths`.
+- Fix `Resource.$patch`.
 
 ## 0.2.1
 
-- Fix bug with HalResource subclasses in embedded resources.
+- Fix bug with `HalResource` subclasses in embedded resources.
 
 ## 0.2.0
 
