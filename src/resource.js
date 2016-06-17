@@ -207,11 +207,11 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$syncTime
        */
-      $load: {value: function () {
-        if (this.$syncTime) {
-          return $q.when(this);
-        } else {
+      $load: {value: function (ts) {
+        if (!this.$syncTime || (ts && this.$syncTime < ts)) {
           return this.$context.httpGet(this);
+        } else {
+          return $q.when(this);
         }
       }},
 

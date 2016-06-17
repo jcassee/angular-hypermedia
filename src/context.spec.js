@@ -193,14 +193,22 @@ describe('ResourceContext', function () {
     expect(ResourceContext.busyRequests).toBe(0);
   });
 
-  it('gets synced resources on refresh', function () {
+  it('gets synced resources on refresh and stale', function () {
+    var ts = Date.now();
     resource.$syncTime = 1;
     var resource2 = context.get('http://example.com/other');
     $httpBackend.expectGET(resource.$uri, {'Accept': 'application/json'})
       .respond('{"name": "John"}', {'Content-Type': 'application/json'});
-    context.refresh();
+    context.refresh(ts);
     $httpBackend.flush();
     expect(resource.name).toBe('John');
     expect(resource2.$isSynced).toBe(false);
   });
+
+  it('does not get synced resources on refresh', function () {
+    resource.$syncTime = Date.now();
+    context.refresh(1);
+    // No outstanding requests
+  });
+
 });

@@ -4,11 +4,11 @@ module.exports = function (config) {
   config.set({
 
     files: [
-      'node_modules/angular/angular.js',
-      'node_modules/angular-mocks/angular-mocks.js',
-      'node_modules/linkheader-parser/dist/linkheader-parser-browser.js',
-      'node_modules/mediatype-parser/dist/mediatype-parser-browser.js',
-      'node_modules/uri-templates/uri-templates.js',
+      'bower_components/angular/angular.js',
+      'bower_components/angular-mocks/angular-mocks.js',
+      'bower_components/linkheader-parser/dist/linkheader-parser-browser.js',
+      'bower_components/mediatype-parser/dist/mediatype-parser-browser.js',
+      'bower_components/uri-templates/uri-templates.js',
       'src/*.js'
     ],
 

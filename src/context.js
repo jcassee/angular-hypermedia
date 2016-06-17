@@ -69,11 +69,12 @@ angular.module('hypermedia')
        *          the response of that request.
        *
        */
-      refresh: {value: function () {
+      refresh: {value: function (ts) {
+        if (!ts) ts = Date.now();
         var promises = [];
         angular.forEach(this.resources, function (resource) {
           if (resource.$isSynced) {
-            promises.push(resource.$get());
+            promises.push(resource.$load(ts));
           }
         });
         return $q.all(promises);

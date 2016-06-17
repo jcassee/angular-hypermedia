@@ -164,11 +164,12 @@ angular.module('hypermedia')
        *          the response of that request.
        *
        */
-      refresh: {value: function () {
+      refresh: {value: function (ts) {
+        if (!ts) ts = Date.now();
         var promises = [];
         angular.forEach(this.resources, function (resource) {
           if (resource.$isSynced) {
-            promises.push(resource.$get());
+            promises.push(resource.$load(ts));
           }
         });
         return $q.all(promises);
@@ -684,11 +685,11 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$syncTime
        */
-      $load: {value: function () {
-        if (this.$syncTime) {
-          return $q.when(this);
-        } else {
+      $load: {value: function (ts) {
+        if (!this.$syncTime || (ts && this.$syncTime < ts)) {
           return this.$context.httpGet(this);
+        } else {
+          return $q.when(this);
         }
       }},
 
