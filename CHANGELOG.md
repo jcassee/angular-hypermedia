@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0
+
+- Add `Resource.$refresh` and `Resource.$refreshPaths`.
+- Remove `Context.refresh`.
+
 ## 0.8.1
 
 - Fix gulp build.
