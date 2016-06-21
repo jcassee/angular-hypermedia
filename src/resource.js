@@ -286,8 +286,8 @@ angular.module('hypermedia')
        *                   paths have been loaded
        * @see {@link #$loadPaths}
        */
-      $refreshPaths: {value: function (paths, path_prefix, root_uri) {
-        return this.$loadPaths(paths, Date.now(), path_prefix, root_uri);
+      $refreshPaths: {value: function (paths) {
+        return this.$loadPaths(paths, Date.now());
       }},
 
       /**
