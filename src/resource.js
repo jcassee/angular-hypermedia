@@ -277,6 +277,20 @@ angular.module('hypermedia')
       }},
 
       /**
+       * Refresh all resources reachable from a resource using one or more paths.
+       *
+       * @function
+       * @param {Resource} resource
+       * @param {object} paths
+       * @return {Promise} a promise that resolves to the resource once all
+       *                   paths have been loaded
+       * @see {@link #$loadPaths}
+       */
+      $refreshPaths: {value: function (paths) {
+        return this.$loadPaths(paths, Date.now());
+      }},
+
+      /**
        * Create a $http GET request configuration object.
        *
        * @function

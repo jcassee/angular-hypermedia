@@ -303,6 +303,37 @@ describe('Resource', function () {
     $rootScope.$digest();
   });
 
+  it('refreshes paths of related resources', function (done) {
+    var resource1 = new Resource('http://example.com/1', mockContext);
+    var resource2 = new Resource('http://example.com/2', mockContext);
+    mockContext.get.and.callFake(function (uri) {
+      switch (uri) {
+        case resource.$uri:  return resource;
+        case resource1.$uri: return resource1;
+        case resource2.$uri: return resource2;
+      }
+    });
+    mockContext.httpGet.and.callFake(function (resource) {
+      return $q.when(resource);
+    });
+
+    resource.$links.step1 = {href: resource1.$uri};
+    resource1.step2 = resource2.$uri;
+
+    var ts = new Date('2016-01-01').getTime();
+    resource.$syncTime = ts;
+    resource1.$syncTime = ts;
+    // resource2 is not synced
+
+    resource.$refreshPaths({step1: {}}).then(function () {
+      expect(mockContext.httpGet).toHaveBeenCalledWith(resource);
+      expect(mockContext.httpGet).toHaveBeenCalledWith(resource1);
+      expect(mockContext.httpGet).toHaveBeenCalledWith(resource2);
+      done();
+    });
+    $rootScope.$digest();
+  });
+
   it('generates info message if path not found', function (done) {
     spyOn($log, 'warn');
     mockContext.get.and.callFake(function (uri) {
