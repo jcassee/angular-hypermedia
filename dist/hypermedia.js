@@ -3,7 +3,7 @@
 /**
  * @ngdoc module
  * @name halresource
- * @version 0.8.0
+ * @version 0.9.0
  * @description
  *
  * This module contains classes and services to work with hypermedia APIs.
@@ -153,30 +153,6 @@ angular.module('hypermedia')
         var copy = this.get(resource.$uri);
         copy.$update(resource, resource.$links);
         return copy;
-      }},
-
-      /**
-       * Refresh all synchronized resources in the context by issuing a HTTP GET request on them.
-       * GET requests are only issued for resources that are stale. Staleness is defined by
-       * checking the resource's syncTime against the timestamp that is passed as argument,
-       * or if none was passsed, against current time millis.
-       *
-       * @function
-       * @param {number} ts the timestamp to check against
-       * @returns {Promise} a promise that will be resolved with an array of all resources that
-       *          were refreshed. If any of the requests fails, the promise will be rejected with
-       *          the response of that request.
-       *
-       */
-      refresh: {value: function (ts) {
-        if (!ts) ts = Date.now();
-        var promises = [];
-        angular.forEach(this.resources, function (resource) {
-          if (resource.$isSynced) {
-            promises.push(resource.$load(ts));
-          }
-        });
-        return $q.all(promises);
       }},
 
       /**
@@ -700,6 +676,20 @@ angular.module('hypermedia')
       }},
 
       /**
+       * Perform an HTTP GET request if the resource was synced before
+       * the timestamp passed as argument.
+       *
+       * @function
+       * @param {number} [ts] timestamp to check against; default: Date.now()
+       * @returns a promise that is resolved to the resource
+       * @see Resource#$syncTime
+       */
+      $refresh: {value: function (ts) {
+        if (!ts) ts = Date.now();
+        return this.$load(ts);
+      }},
+
+      /**
        * Load all resources reachable from a resource using one or more paths.
        * A path is on object hierarchy containing property or relation names.
        * If the name matches a property it is loaded, otherwise it is
@@ -756,6 +746,22 @@ angular.module('hypermedia')
         }).then(function () {
           return self;
         });
+      }},
+
+      /**
+       * Refresh all resources reachable from a resource using one or more paths.
+       *
+       * @function
+       * @param {Resource} resource
+       * @param {object} paths
+       * @param {number} [ts] timestamp to check against; default: Date.now()
+       * @return {Promise} a promise that resolves to the resource once all
+       *                   paths have been loaded
+       * @see {@link #$loadPaths}
+       */
+      $refreshPaths: {value: function (paths, ts) {
+        if (!ts) ts = Date.now();
+        return this.$loadPaths(paths, ts);
       }},
 
       /**

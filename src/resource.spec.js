@@ -226,8 +226,14 @@ describe('Resource', function () {
 
   it('loads a resource if it has been synced but stale', function () {
     resource.$syncTime = new Date('2016-01-01').getTime();
-    resource.$load(Date.now());
+    resource.$load(new Date('2016-01-02').getTime());
     expect(mockContext.httpGet).toHaveBeenCalledWith(resource);
+  });
+
+  it('does not load a resource again if it has been synced before the load timestamp', function () {
+    resource.$syncTime = new Date('2016-01-02').getTime();
+    resource.$load(new Date('2016-01-01').getTime());
+    expect(mockContext.httpGet).not.toHaveBeenCalled();
   });
 
   it('does not load a resource again if it has been synced', function () {
@@ -301,6 +307,29 @@ describe('Resource', function () {
       done();
     });
     $rootScope.$digest();
+  });
+
+  it('refreshes a resource if it has not been synced yet', function () {
+    resource.$refresh();
+    expect(mockContext.httpGet).toHaveBeenCalledWith(resource);
+  });
+
+  it('refreshes a resource if it has been synced before', function () {
+    resource.$syncTime = new Date('2016-01-01').getTime();
+    resource.$refresh();
+    expect(mockContext.httpGet).toHaveBeenCalled();
+  });
+
+  it('refreshes a resource if it has been synced but stale', function () {
+    resource.$syncTime = new Date('2016-01-01').getTime();
+    resource.$refresh(new Date('2016-01-02').getTime());
+    expect(mockContext.httpGet).toHaveBeenCalledWith(resource);
+  });
+
+  it('does not refresh a resource if it has been synced before the refresh timestamp', function () {
+    resource.$syncTime = new Date('2016-01-02').getTime();
+    resource.$refresh(new Date('2016-01-01').getTime());
+    expect(mockContext.httpGet).not.toHaveBeenCalledWith(resource);
   });
 
   it('refreshes paths of related resources', function (done) {

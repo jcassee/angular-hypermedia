@@ -411,20 +411,18 @@ Loading related resources is usually done in resolve functions of a URL route.
 
 It is often useful to make sure the resource data is not too old. You can pass a
 timestamp to the `$load` and `$loadPaths` methods to issue a GET request if the
-last synchronization was before that time.
+last synchronization was before that time. The `$refresh` and
+`$refreshPaths` methods work similarly, but use `Date.now()` as a default
+timestamp.
 
 **Example:**
 
     var oneHourAgo = Date.now() - 60*60*1000;
     movie.$load(oneHourAgo);
-    person.$loadPaths({'car': {}}, oneHourAgo);
+    person.$loadPaths({car: {}}, oneHourAgo);
 
-You can also refresh all synchronized resources in a context using the `refresh`
-method.
-
-**Example:**
-
-    context.refresh()
+    car.$refresh();
+    manufacturer.$refreshPaths({modelsHref: {}})
 
 
 ## JSON HAL

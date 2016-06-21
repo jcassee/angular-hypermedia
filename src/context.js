@@ -61,30 +61,6 @@ angular.module('hypermedia')
       }},
 
       /**
-       * Refresh all synchronized resources in the context by issuing a HTTP GET request on them.
-       * GET requests are only issued for resources that are stale. Staleness is defined by
-       * checking the resource's syncTime against the timestamp that is passed as argument,
-       * or if none was passsed, against current time millis.
-       *
-       * @function
-       * @param {number} ts the timestamp to check against
-       * @returns {Promise} a promise that will be resolved with an array of all resources that
-       *          were refreshed. If any of the requests fails, the promise will be rejected with
-       *          the response of that request.
-       *
-       */
-      refresh: {value: function (ts) {
-        if (!ts) ts = Date.now();
-        var promises = [];
-        angular.forEach(this.resources, function (resource) {
-          if (resource.$isSynced) {
-            promises.push(resource.$load(ts));
-          }
-        });
-        return $q.all(promises);
-      }},
-
-      /**
        * Perform a HTTP GET request on a resource.
        *
        * @function
