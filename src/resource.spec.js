@@ -28,6 +28,12 @@ describe('Resource', function () {
     expect(resource.$profile).toBeNull();
   });
 
+  it('is initialized correctly with encoded uri', function () {
+    var resource1 = new Resource('http://www.example.com?q=id%3A1');
+    expect(resource1.$uri).toBe('http://www.example.com?q=id:1');
+    expect(resource1.$links.self.href).toBe('http://www.example.com?q=id:1');
+  });
+
   it('sets $isSynced if $syncTime is set', function () {
     resource.$syncTime = Date.now();
     expect(resource.$isSynced).toBeTruthy();
@@ -486,6 +492,13 @@ describe('Resource', function () {
     expect(resource.blob).toEqual(data.blob);
     expect(resource.arrayBuffer).toEqual(data.arrayBuffer);
     expect(resource.document).toEqual(data.document);
+  });
+
+  it('requires the href of a link with the "self" relation to equal the resource URI', function () {
+    resource.$update({foo: 'bar'}, {self: {href: 'http://example.com'}});
+    expect(function () {
+      resource.$update({foo: 'qux'}, {self: {href: 'http://example.com/other'}});
+    }).toThrowError('Self link href differs: expected "http://example.com", was "http://example.com/other"');
   });
 
   it('requires the href of a link with the "self" relation to equal the resource URI', function () {

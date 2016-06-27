@@ -9,7 +9,7 @@ angular.module('hypermedia')
    *
    * Hypermedia resource.
    */
-  .factory('Resource', ['$log', '$q', 'HypermediaUtil', function ($log, $q, HypermediaUtil) {
+  .factory('Resource', ['$log', '$q', 'HypermediaUtil', 'URI', function ($log, $q, HypermediaUtil, URI) {
     var forArray = HypermediaUtil.forArray;
 
     var registeredProfiles = {};
@@ -38,7 +38,7 @@ angular.module('hypermedia')
          *
          * @property {string}
          */
-        $uri: {value: uri},
+        $uri: {value: URI.decode(uri)},
 
         /**
          * The resource context. Can be used to get related resources.
@@ -54,7 +54,7 @@ angular.module('hypermedia')
          */
         $links: {value: {
           self: {
-            href: uri
+            href: URI.decode(uri)
           }
         }, writable: true},
 

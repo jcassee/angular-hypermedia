@@ -33,4 +33,7 @@ angular.module('hypermedia')
     };
   })
 
+  .factory('URI', function ($window) {
+    return $window.URI;
+  })
 ;

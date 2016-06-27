@@ -68,6 +68,20 @@ describe('HalResource', function () {
     expect(resource._links).toBeUndefined();
   });
 
+  it('extracts encoded links', function () {
+    var resource1 = new HalResource('http://www.example.com?q=id%3A1', mockContext);
+    mockContext.get.and.returnValue(resource1);
+    var links = {
+      self: {href: 'http://www.example.com?q=id%3A1'}
+    };
+    resource1.$update({
+      foo: 'bar',
+      _links: links
+    });
+    expect(resource1.$links.self.href).toEqual('http://www.example.com?q=id:1');
+    expect(resource1._links).toBeUndefined();
+  });
+
   it('extracts and links embedded resources', function () {
     var resource1 = new HalResource('http://example.com/1', mockContext);
     mockContext.get.and.callFake(function (uri) {

@@ -10,7 +10,7 @@ angular.module('hypermedia')
    * Context for working with hypermedia resources. The context has methods
    * for making HTTP requests and acts as an identity map.
    */
-  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', function ($http, $log, $q, Resource) {
+  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', 'URI', function ($http, $log, $q, Resource, URI) {
 
     var busyRequests = 0;
     var errorHandlers = {};
@@ -38,6 +38,7 @@ angular.module('hypermedia')
        * @returns {Resource}
        */
       get: {value: function (uri, Factory) {
+        uri = URI.decode(uri);
         var resource = this.resources[uri];
         if (!resource) {
           Factory = (Factory || this.resourceFactory);

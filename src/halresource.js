@@ -9,7 +9,7 @@ angular.module('hypermedia')
    *
    * HAL resource.
    */
-  .factory('HalResource', ['$log', 'HypermediaUtil', 'Resource', function ($log, HypermediaUtil, Resource) {
+  .factory('HalResource', ['$log', 'HypermediaUtil', 'Resource', 'URI', function ($log, HypermediaUtil, Resource, URI) {
     var forArray = HypermediaUtil.forArray;
 
     /**
@@ -53,7 +53,7 @@ angular.module('hypermedia')
         links = links || {};
         var selfHref = ((data._links || {}).self || {}).href;
         if (!selfHref) selfHref = (links.self || {}).href;
-        if (selfHref != this.$uri) {
+        if (URI.decode(selfHref) != this.$uri) {
           throw new Error("Self link href differs: expected '" + this.$uri + "', was " + angular.toJson(selfHref));
         }
 
@@ -76,6 +76,7 @@ angular.module('hypermedia')
 
       // Extract links
       angular.extend(links, data._links);
+      links.self.href = URI.decode(links.self.href);
       delete data._links;
 
       // Extract and update embedded resources
