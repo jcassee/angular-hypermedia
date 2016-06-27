@@ -9,6 +9,7 @@ module.exports = function (config) {
       'node_modules/linkheader-parser/dist/linkheader-parser-browser.js',
       'node_modules/mediatype-parser/dist/mediatype-parser-browser.js',
       'node_modules/uri-templates/uri-templates.js',
+      'node_modules/urijs/src/URI.js',
       'src/*.js'
     ],
 

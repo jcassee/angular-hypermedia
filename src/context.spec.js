@@ -76,6 +76,11 @@ describe('ResourceContext', function () {
     expect(context.get('http://example.com/other')).not.toBe(resource);
   });
 
+  it('decodes resource uri', function () {
+    var resource1 = context.get('http://www.example.com?q=id%3A1');
+    expect(context.get('http://www.example.com?q=id:1')).toBe(resource1);
+  });
+
   it('copies resources from another context', function () {
     resource.$links.profile = 'http://example.com/profile';
     resource.name = 'John';

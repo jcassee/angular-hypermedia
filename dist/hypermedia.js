@@ -105,7 +105,7 @@ angular.module('hypermedia')
    * Context for working with hypermedia resources. The context has methods
    * for making HTTP requests and acts as an identity map.
    */
-  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', function ($http, $log, $q, Resource) {
+  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', 'URI', function ($http, $log, $q, Resource, URI) {
 
     var busyRequests = 0;
     var errorHandlers = {};
@@ -133,6 +133,7 @@ angular.module('hypermedia')
        * @returns {Resource}
        */
       get: {value: function (uri, Factory) {
+        uri = URI.decode(uri);
         var resource = this.resources[uri];
         if (!resource) {
           Factory = (Factory || this.resourceFactory);
@@ -359,7 +360,7 @@ angular.module('hypermedia')
    *
    * HAL resource.
    */
-  .factory('HalResource', ['$log', 'HypermediaUtil', 'Resource', function ($log, HypermediaUtil, Resource) {
+  .factory('HalResource', ['$log', 'HypermediaUtil', 'Resource', 'URI', function ($log, HypermediaUtil, Resource, URI) {
     var forArray = HypermediaUtil.forArray;
 
     /**
@@ -403,7 +404,7 @@ angular.module('hypermedia')
         links = links || {};
         var selfHref = ((data._links || {}).self || {}).href;
         if (!selfHref) selfHref = (links.self || {}).href;
-        if (selfHref != this.$uri) {
+        if (URI.decode(selfHref) != this.$uri) {
           throw new Error("Self link href differs: expected '" + this.$uri + "', was " + angular.toJson(selfHref));
         }
 
@@ -426,6 +427,7 @@ angular.module('hypermedia')
 
       // Extract links
       angular.extend(links, data._links);
+      links.self.href = URI.decode(links.self.href);
       delete data._links;
 
       // Extract and update embedded resources
@@ -467,7 +469,7 @@ angular.module('hypermedia')
    *
    * Hypermedia resource.
    */
-  .factory('Resource', ['$log', '$q', 'HypermediaUtil', function ($log, $q, HypermediaUtil) {
+  .factory('Resource', ['$log', '$q', 'HypermediaUtil', 'URI', function ($log, $q, HypermediaUtil, URI) {
     var forArray = HypermediaUtil.forArray;
 
     var registeredProfiles = {};
@@ -496,7 +498,7 @@ angular.module('hypermedia')
          *
          * @property {string}
          */
-        $uri: {value: uri},
+        $uri: {value: URI.decode(uri)},
 
         /**
          * The resource context. Can be used to get related resources.
@@ -512,7 +514,7 @@ angular.module('hypermedia')
          */
         $links: {value: {
           self: {
-            href: uri
+            href: URI.decode(uri)
           }
         }, writable: true},
 
@@ -1058,6 +1060,9 @@ angular.module('hypermedia')
     };
   })
 
+  .factory('URI', function ($window) {
+    return $window.URI;
+  })
 ;
 
 'use strict';
