@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0
+
+- Add URI aliases.
+
 ## 0.9.0
 
 - Add `Resource.$refresh` and `Resource.$refreshPaths`.

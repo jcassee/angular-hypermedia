@@ -214,9 +214,9 @@ fails the object remains unchanged.
 ## POST requests
 
 A POST request is used to "operate on" data instead of synchronizing it. What
-the "operate" means is up to the server, and depends on the resource. For
-example, it is often used to create new resources. The `$post` method accepts
-as arguments the data to be sent in the body and a mapping of headers.
+the "operate" means is up to the server, and depends on the resource. It is
+often used to create new resources. The `$post` method accepts as arguments the
+data to be sent in the body and a mapping of headers.
 
 **Example:**
 
@@ -308,6 +308,27 @@ the `$linkRel` method.
 **Example:**
 
     expect(car.$linkRel('http://example.com/rels/owner')).toBe(person);
+
+
+### Self links and URI aliases
+
+The *self* relation identifies the resource itself. If a HTTP GET response
+contains a self link to a URI different from resource URI, that URI is added to
+the context as an alias. In other words, the resource will be available under
+both the original URI and the self href.
+
+**Example:**
+
+    var movie = context.get('http://example.com/movie/jaws-4');
+    movie.$get().then(function () {
+      // GET response contains self link to "http://example.com/movie/jaws-the-revenge"
+      expect(context.get('http://example.com/movie/jaws-the-revenge')).toBe(movie);
+    });
+
+This behavior can be disabled by setting `context.enableAliases` to `false`, or
+globally by setting `ResourceContext.defaultEnableAliases`. If aliases are
+disabled, trying to update a resource with a self link different to the resource
+URI will throw an error.
 
 
 ## Profiles
