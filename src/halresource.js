@@ -51,12 +51,6 @@ angular.module('hypermedia')
        */
       $update: {value: function (data, links) {
         links = links || {};
-        var selfHref = ((data._links || {}).self || {}).href;
-        if (!selfHref) selfHref = (links.self || {}).href;
-        if (selfHref != this.$uri) {
-          throw new Error("Self link href differs: expected '" + this.$uri + "', was " + angular.toJson(selfHref));
-        }
-
         return extractAndUpdateResources(data, links, this);
       }}
     });
@@ -73,6 +67,11 @@ angular.module('hypermedia')
      */
     function extractAndUpdateResources(data, links, self) {
       var resources = [];
+
+      var selfHref = ((data._links || {}).self || {}).href;
+      if (!selfHref) {
+        throw new Error('Self link href expected but not found');
+      }
 
       // Extract links
       angular.extend(links, data._links);

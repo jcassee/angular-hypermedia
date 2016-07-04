@@ -26,6 +26,34 @@ angular.module('hypermedia')
       this.resources = {};
     }
 
+    Object.defineProperties(ResourceContext, {
+
+      /**
+       * The default resource factory.
+       *
+       * @property {resourceFactory}
+       */
+      defaultResourceFactory: {value: Resource, writable: true},
+
+      /**
+       * The number of current HTTP requests.
+       *
+       * @property {number}
+       */
+      busyRequests: {get: function () {
+        return busyRequests;
+      }},
+
+      registerErrorHandler: {value: function (contentType, handler) {
+        errorHandlers[contentType] = handler;
+      }},
+
+      /**
+       * Whether resource aliases are allowed by default.
+       */
+      defaultEnableAliases: {value: true, writable: true}
+    });
+
     ResourceContext.prototype = Object.create(Object.prototype, {
       constructor: {value: ResourceContext},
 
@@ -58,6 +86,23 @@ angular.module('hypermedia')
         var copy = this.get(resource.$uri);
         copy.$update(resource, resource.$links);
         return copy;
+      }},
+
+      /**
+       * Whether resaurce aliases are enabled. If false, context.addAlias throws an error.
+       */
+      enableAliases: {value: ResourceContext.defaultEnableAliases, writable: true},
+
+      /**
+       * Adds an alias to an existing resource.
+       *
+       * @function
+       * @param {string} aliasUri the new URI to point to the original resource
+       * @param {string} originalUri the URI of the original resource.
+       */
+      addAlias: {value: function (aliasUri, originalUri) {
+        if (!this.enableAliases) throw new Error('Resource aliases not enabled');
+        this.resources[aliasUri] = this.resources[originalUri];
       }},
 
       /**
@@ -189,29 +234,6 @@ angular.module('hypermedia')
           resource.$syncTime = syncTime;
         });
         return $q.when();
-      }}
-    });
-
-    Object.defineProperties(ResourceContext, {
-
-      /**
-       * The default resource factory.
-       *
-       * @property {resourceFactory}
-       */
-      defaultResourceFactory: {value: Resource, writable: true},
-
-      /**
-       * The number of current HTTP requests.
-       *
-       * @property {number}
-       */
-      busyRequests: {get: function () {
-        return busyRequests;
-      }},
-
-      registerErrorHandler: {value: function (contentType, handler) {
-        errorHandlers[contentType] = handler;
       }}
     });
 

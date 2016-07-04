@@ -76,6 +76,19 @@ describe('ResourceContext', function () {
     expect(context.get('http://example.com/other')).not.toBe(resource);
   });
 
+  it('adds resource aliases', function () {
+    context.addAlias('http://example.com/other', 'http://example.com');
+    expect(context.get('http://example.com')).toBe(resource);
+    expect(context.get('http://example.com/other')).toBe(resource);
+  });
+
+  it('can disable resource aliases', function () {
+    context.enableAliases = false;
+    expect(function () {
+      context.addAlias('http://example.com/other', 'http://example.com');
+    }).toThrowError("Resource aliases not enabled");
+  });
+
   it('copies resources from another context', function () {
     resource.$links.profile = 'http://example.com/profile';
     resource.name = 'John';

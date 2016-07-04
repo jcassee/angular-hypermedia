@@ -51,7 +51,7 @@ describe('HalResource', function () {
   it('requires a link with the "self" relation in the data', function () {
     expect(function () {
       resource.$update({foo: 'bar'});
-    }).toThrowError("Self link href differs: expected 'http://example.com', was undefined");
+    }).toThrowError("Self link href expected but not found");
   });
 
   it('extracts links', function () {

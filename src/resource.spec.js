@@ -12,7 +12,7 @@ describe('Resource', function () {
     $q = _$q_;
     $rootScope = _$rootScope_;
     Resource = _Resource_;
-    mockContext = jasmine.createSpyObj('mockContext', ['get', 'httpGet', 'httpPut', 'httpDelete', 'httpPost', 'httpPatch']);
+    mockContext = jasmine.createSpyObj('mockContext', ['get', 'addAlias', 'httpGet', 'httpPut', 'httpDelete', 'httpPost', 'httpPatch']);
     uri = 'http://example.com';
     resource = new Resource(uri, mockContext);
   }));
@@ -488,11 +488,19 @@ describe('Resource', function () {
     expect(resource.document).toEqual(data.document);
   });
 
-  it('requires the href of a link with the "self" relation to equal the resource URI', function () {
+  it('requires the href of a link with the "self" relation to equal the resource URI if not enableAliases', function () {
+    mockContext.enableAliases = false;
     resource.$update({foo: 'bar'}, {self: {href: 'http://example.com'}});
     expect(function () {
       resource.$update({foo: 'qux'}, {self: {href: 'http://example.com/other'}});
     }).toThrowError('Self link href differs: expected "http://example.com", was "http://example.com/other"');
+  });
+
+  it('adds a new self href to the context if enableAliases', function () {
+    mockContext.enableAliases = true;
+    resource.$update({foo: 'bar'}, {self: {href: 'http://example.com'}});
+    resource.$update({foo: 'qux'}, {self: {href: 'http://example.com/other'}});
+    expect(mockContext.addAlias).toHaveBeenCalledWith('http://example.com/other', 'http://example.com');
   });
 
   // Merges

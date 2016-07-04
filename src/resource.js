@@ -446,9 +446,14 @@ angular.module('hypermedia')
        */
       $update: {value: function (data, links) {
         links = links || {};
-        if (links.self && links.self.href !== this.$uri) {
-          throw new Error('Self link href differs: expected "' + this.$uri + '", was ' +
-              angular.toJson(links.self.href));
+        var selfHref = ((links || {}).self || {}).href;
+        if (selfHref && selfHref !== this.$uri) {
+          if (this.$context.enableAliases) {
+            this.$context.addAlias(selfHref, this.$uri);
+          } else {
+            throw new Error('Self link href differs: expected "' + this.$uri + '", was ' +
+              angular.toJson(selfHref));
+          }
         }
 
         // Update resource
