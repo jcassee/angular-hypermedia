@@ -127,7 +127,6 @@ describe('HalResource', function () {
       }
     });
 
-    expect(mockContext.get).toHaveBeenCalledWith(resource2.$uri, MyResource);
     expect(mockContext.get).toHaveBeenCalledWith(resource3.$uri, MyResource);
   });
 });

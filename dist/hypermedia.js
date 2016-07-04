@@ -121,6 +121,34 @@ angular.module('hypermedia')
       this.resources = {};
     }
 
+    Object.defineProperties(ResourceContext, {
+
+      /**
+       * The default resource factory.
+       *
+       * @property {resourceFactory}
+       */
+      defaultResourceFactory: {value: Resource, writable: true},
+
+      /**
+       * The number of current HTTP requests.
+       *
+       * @property {number}
+       */
+      busyRequests: {get: function () {
+        return busyRequests;
+      }},
+
+      registerErrorHandler: {value: function (contentType, handler) {
+        errorHandlers[contentType] = handler;
+      }},
+
+      /**
+       * Whether resource aliases are allowed by default.
+       */
+      defaultEnableAliases: {value: true, writable: true}
+    });
+
     ResourceContext.prototype = Object.create(Object.prototype, {
       constructor: {value: ResourceContext},
 
@@ -153,6 +181,23 @@ angular.module('hypermedia')
         var copy = this.get(resource.$uri);
         copy.$update(resource, resource.$links);
         return copy;
+      }},
+
+      /**
+       * Whether resaurce aliases are enabled. If false, context.addAlias throws an error.
+       */
+      enableAliases: {value: ResourceContext.defaultEnableAliases, writable: true},
+
+      /**
+       * Adds an alias to an existing resource.
+       *
+       * @function
+       * @param {string} aliasUri the new URI to point to the original resource
+       * @param {string} originalUri the URI of the original resource.
+       */
+      addAlias: {value: function (aliasUri, originalUri) {
+        if (!this.enableAliases) throw new Error('Resource aliases not enabled');
+        this.resources[aliasUri] = this.resources[originalUri];
       }},
 
       /**
@@ -287,29 +332,6 @@ angular.module('hypermedia')
       }}
     });
 
-    Object.defineProperties(ResourceContext, {
-
-      /**
-       * The default resource factory.
-       *
-       * @property {resourceFactory}
-       */
-      defaultResourceFactory: {value: Resource, writable: true},
-
-      /**
-       * The number of current HTTP requests.
-       *
-       * @property {number}
-       */
-      busyRequests: {get: function () {
-        return busyRequests;
-      }},
-
-      registerErrorHandler: {value: function (contentType, handler) {
-        errorHandlers[contentType] = handler;
-      }}
-    });
-
     return ResourceContext;
 
 
@@ -401,13 +423,7 @@ angular.module('hypermedia')
        */
       $update: {value: function (data, links) {
         links = links || {};
-        var selfHref = ((data._links || {}).self || {}).href;
-        if (!selfHref) selfHref = (links.self || {}).href;
-        if (selfHref != this.$uri) {
-          throw new Error("Self link href differs: expected '" + this.$uri + "', was " + angular.toJson(selfHref));
-        }
-
-        return extractAndUpdateResources(data, links, this);
+        return extractAndUpdateResources(data, links, this, this);
       }}
     });
 
@@ -419,10 +435,16 @@ angular.module('hypermedia')
      *
      * @param {object} data
      * @param {object} [links]
-     * @param {Resource} self
+     * @param {Resource} rootResource
+     * @param {Resource} resource
      */
-    function extractAndUpdateResources(data, links, self) {
+    function extractAndUpdateResources(data, links, rootResource, resource) {
       var resources = [];
+
+      var selfHref = ((data._links || {}).self || {}).href;
+      if (!selfHref) {
+        throw new Error('Self link href expected but not found');
+      }
 
       // Extract links
       angular.extend(links, data._links);
@@ -440,13 +462,13 @@ angular.module('hypermedia')
         }
         // Recurse into embedded resource
         forArray(embeds, function (embedded) {
-          resources = resources.concat(extractAndUpdateResources(embedded, {}, self));
+          resources = resources.concat(extractAndUpdateResources(embedded, {}, rootResource, null));
         });
       });
       delete data._embedded;
 
       // Update resource
-      var resource = self.$context.get(links.self.href, self.constructor);
+      if (!resource) resource = rootResource.$context.get(links.self.href, rootResource.constructor);
       Resource.prototype.$update.call(resource, data, links);
       resources.push(resource);
 
@@ -904,9 +926,14 @@ angular.module('hypermedia')
        */
       $update: {value: function (data, links) {
         links = links || {};
-        if (links.self && links.self.href !== this.$uri) {
-          throw new Error('Self link href differs: expected "' + this.$uri + '", was ' +
-              angular.toJson(links.self.href));
+        var selfHref = ((links || {}).self || {}).href;
+        if (selfHref && selfHref !== this.$uri) {
+          if (this.$context.enableAliases) {
+            this.$context.addAlias(selfHref, this.$uri);
+          } else {
+            throw new Error('Self link href differs: expected "' + this.$uri + '", was ' +
+              angular.toJson(selfHref));
+          }
         }
 
         // Update resource

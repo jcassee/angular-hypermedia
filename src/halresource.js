@@ -51,7 +51,7 @@ angular.module('hypermedia')
        */
       $update: {value: function (data, links) {
         links = links || {};
-        return extractAndUpdateResources(data, links, this);
+        return extractAndUpdateResources(data, links, this, this);
       }}
     });
 
@@ -63,9 +63,10 @@ angular.module('hypermedia')
      *
      * @param {object} data
      * @param {object} [links]
-     * @param {Resource} self
+     * @param {Resource} rootResource
+     * @param {Resource} resource
      */
-    function extractAndUpdateResources(data, links, self) {
+    function extractAndUpdateResources(data, links, rootResource, resource) {
       var resources = [];
 
       var selfHref = ((data._links || {}).self || {}).href;
@@ -89,13 +90,13 @@ angular.module('hypermedia')
         }
         // Recurse into embedded resource
         forArray(embeds, function (embedded) {
-          resources = resources.concat(extractAndUpdateResources(embedded, {}, self));
+          resources = resources.concat(extractAndUpdateResources(embedded, {}, rootResource, null));
         });
       });
       delete data._embedded;
 
       // Update resource
-      var resource = self.$context.get(links.self.href, self.constructor);
+      if (!resource) resource = rootResource.$context.get(links.self.href, rootResource.constructor);
       Resource.prototype.$update.call(resource, data, links);
       resources.push(resource);
 
