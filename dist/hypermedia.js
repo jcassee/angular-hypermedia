@@ -53,7 +53,7 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $getRequest: {value: function () {
+      $getRequest: {writable: true, value: function () {
         return {
           method: 'get',
           url: this.$uri,
@@ -71,7 +71,7 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $putRequest: {value: function () {
+      $putRequest: {writable: true, value: function () {
         return {
           method: 'put',
           url: this.$uri,
@@ -83,7 +83,7 @@ angular.module('hypermedia')
       /**
        * Throw an error. Binary resources have no obvious PATCH semantics.
        */
-      $patchRequest: {value: function () {
+      $patchRequest: {writable: true, value: function () {
         throw new Error('BlobResource does not support the PATCH method');
       }}
     });
@@ -139,7 +139,7 @@ angular.module('hypermedia')
         return busyRequests;
       }},
 
-      registerErrorHandler: {value: function (contentType, handler) {
+      registerErrorHandler: {writable: true, value: function (contentType, handler) {
         errorHandlers[contentType] = handler;
       }},
 
@@ -160,7 +160,7 @@ angular.module('hypermedia')
        * @param {ResourceFactory} [Factory] optional resource creation function
        * @returns {Resource}
        */
-      get: {value: function (uri, Factory) {
+      get: {writable: true, value: function (uri, Factory) {
         var resource = this.resources[uri];
         if (!resource) {
           Factory = (Factory || this.resourceFactory);
@@ -177,7 +177,7 @@ angular.module('hypermedia')
        * @param {Resource} resource
        * @returns {Resource} a copy of the resource in this context
        */
-      copy: {value: function (resource) {
+      copy: {writable: true, value: function (resource) {
         var copy = this.get(resource.$uri);
         copy.$update(resource, resource.$links);
         return copy;
@@ -195,7 +195,7 @@ angular.module('hypermedia')
        * @param {string} aliasUri the new URI to point to the original resource
        * @param {string} originalUri the URI of the original resource.
        */
-      addAlias: {value: function (aliasUri, originalUri) {
+      addAlias: {writable: true, value: function (aliasUri, originalUri) {
         if (!this.enableAliases) throw new Error('Resource aliases not enabled');
         this.resources[aliasUri] = this.resources[originalUri];
       }},
@@ -208,7 +208,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$getRequest
        */
-      httpGet: {value: function (resource) {
+      httpGet: {writable: true, value: function (resource) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$getRequest());
@@ -238,7 +238,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$putRequest
        */
-      httpPut: {value: function (resource) {
+      httpPut: {writable: true, value: function (resource) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$putRequest());
@@ -259,7 +259,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$patchRequest
        */
-      httpPatch: {value: function (resource, data) {
+      httpPatch: {writable: true, value: function (resource, data) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$patchRequest(data));
@@ -281,7 +281,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$deleteRequest
        */
-      httpDelete: {value: function (resource) {
+      httpDelete: {writable: true, value: function (resource) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$deleteRequest());
@@ -306,7 +306,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the response
        * @see Resource#$postRequest
        */
-      httpPost: {value: function (resource, data, headers, callback) {
+      httpPost: {writable: true, value: function (resource, data, headers, callback) {
         busyRequests += 1;
         var request = updateHttp(resource.$postRequest(data, headers, callback));
         return $http(request).catch(handleErrorResponse).finally(function () {
@@ -323,7 +323,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved when the resources have been marked
        * @see Resource#syncTime
        */
-      markSynced: {value: function (resources, syncTime) {
+      markSynced: {writable: true, value: function (resources, syncTime) {
         resources = angular.isArray(resources) ? resources : [resources];
         resources.forEach(function (resource) {
           resource.$syncTime = syncTime;
@@ -405,7 +405,7 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $getRequest: {value: function () {
+      $getRequest: {writable: true, value: function () {
         return {
           method: 'get',
           url: this.$uri,
@@ -421,7 +421,7 @@ angular.module('hypermedia')
        * @param {object} [links]
        * @returns all updated resources
        */
-      $update: {value: function (data, links) {
+      $update: {writable: true, value: function (data, links) {
         links = links || {};
         return extractAndUpdateResources(data, links, this, this);
       }}
@@ -598,7 +598,7 @@ angular.module('hypermedia')
        * @param {object} [vars] URI template variables
        * @returns {string|string[]} the link href or hrefs
        */
-      $propHref: {value: function (prop, vars) {
+      $propHref: {writable: true, value: function (prop, vars) {
         return forArray(this[prop], function (uri) {
           if (vars) uri = new UriTemplate(uri).fillFromObject(vars);
           return uri;
@@ -614,7 +614,7 @@ angular.module('hypermedia')
        * @param {ResourceFactory} [factory] the factory for creating the resource
        * @returns {Resource|Resource[]} the linked resource or resources
        */
-      $propRel: {value: function (prop, vars, factory) {
+      $propRel: {writable: true, value: function (prop, vars, factory) {
         if (angular.isFunction(vars)) {
           factory = vars;
           vars = undefined;
@@ -632,7 +632,7 @@ angular.module('hypermedia')
        * @param {object} [vars] URI template variables
        * @returns {string|string[]} the link href or hrefs
        */
-      $linkHref: {value: function (rel, vars) {
+      $linkHref: {writable: true, value: function (rel, vars) {
         var templated = false;
         var nonTemplated = false;
         var deprecation = {};
@@ -670,7 +670,7 @@ angular.module('hypermedia')
        * @param {ResourceFactory} [factory] the factory for creating the related resource
        * @returns {Resource|Resource[]} the linked resource or resources
        */
-      $linkRel: {value: function (rel, vars, factory) {
+      $linkRel: {writable: true, value: function (rel, vars, factory) {
         if (angular.isFunction(vars)) {
           factory = vars;
           vars = undefined;
@@ -689,7 +689,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$syncTime
        */
-      $load: {value: function (ts) {
+      $load: {writable: true, value: function (ts) {
         if (!this.$syncTime || (ts && this.$syncTime < ts)) {
           return this.$context.httpGet(this);
         } else {
@@ -706,7 +706,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$syncTime
        */
-      $refresh: {value: function (ts) {
+      $refresh: {writable: true, value: function (ts) {
         if (!ts) ts = Date.now();
         return this.$load(ts);
       }},
@@ -740,7 +740,7 @@ angular.module('hypermedia')
        *                   paths have been loaded
        * @see {@link #$load}
        */
-      $loadPaths: {value: function (paths, ts, path_prefix, root_uri) {
+      $loadPaths: {writable: true, value: function (paths, ts, path_prefix, root_uri) {
         var self = this;
         if (!path_prefix) {
           path_prefix = [];
@@ -781,7 +781,7 @@ angular.module('hypermedia')
        *                   paths have been loaded
        * @see {@link #$loadPaths}
        */
-      $refreshPaths: {value: function (paths, ts) {
+      $refreshPaths: {writable: true, value: function (paths, ts) {
         if (!ts) ts = Date.now();
         return this.$loadPaths(paths, ts);
       }},
@@ -806,7 +806,7 @@ angular.module('hypermedia')
        * @function
        * @returns a promise that is resolved to the resource
        */
-      $get: {value: function () {
+      $get: {writable: true, value: function () {
         return this.$context.httpGet(this);
       }},
 
@@ -816,7 +816,7 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $putRequest: {value: function () {
+      $putRequest: {writable: true, value: function () {
         return {
           method: 'put',
           url: this.$uri,
@@ -841,7 +841,7 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $patchRequest: {value: function (data) {
+      $patchRequest: {writable: true, value: function (data) {
         return {
           method: 'patch',
           url: this.$uri,
@@ -856,7 +856,7 @@ angular.module('hypermedia')
        * @function
        * @returns a promise that is resolved to the resource
        */
-      $patch: {value: function (data) {
+      $patch: {writable: true, value: function (data) {
         return this.$context.httpPatch(this, data);
       }},
 
@@ -866,7 +866,7 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $deleteRequest: {value: function () {
+      $deleteRequest: {writable: true, value: function () {
         return {
           method: 'delete',
           url: this.$uri
@@ -879,7 +879,7 @@ angular.module('hypermedia')
        * @function
        * @returns a promise that is resolved to the resource
        */
-      $delete: {value: function () {
+      $delete: {writable: true, value: function () {
         return this.$context.httpDelete(this);
       }},
 
@@ -892,7 +892,7 @@ angular.module('hypermedia')
        * @param {ConfigHttp} [callback] a function that changes the $http request config
        * @returns {object}
        */
-      $postRequest: {value: function (data, headers, callback) {
+      $postRequest: {writable: true, value: function (data, headers, callback) {
         callback = callback || angular.identity;
         return callback({
           method: 'post',
@@ -911,7 +911,7 @@ angular.module('hypermedia')
        * @param {ConfigHttp} [callback] a function that changes the $http request config
        * @returns a promise that is resolved to the response
        */
-      $post: {value: function (data, headers, callback) {
+      $post: {writable: true, value: function (data, headers, callback) {
         return this.$context.httpPost(this, data, headers, callback);
       }},
 
@@ -924,7 +924,7 @@ angular.module('hypermedia')
        * @param {object} [links]
        * @returns the resource
        */
-      $update: {value: function (data, links) {
+      $update: {writable: true, value: function (data, links) {
         links = links || {};
         var selfHref = ((links || {}).self || {}).href;
         if (selfHref && selfHref !== this.$uri) {
@@ -969,7 +969,7 @@ angular.module('hypermedia')
        * @param {object} [links]
        * @returns the resource
        */
-      $merge: {value: function (data) {
+      $merge: {writable: true, value: function (data) {
         var mergePatch = function (target, patch) {
           if (!angular.isObject(patch) || patch === null || Array.isArray(patch)) {
             return patch;
@@ -1014,7 +1014,7 @@ angular.module('hypermedia')
        * @param {string} profile the profile URI
        * @param {object} properties a properties object as used in 'Object.defineProperties()'
        */
-      registerProfile: {value: function (profile, properties) {
+      registerProfile: {writable: true, value: function (profile, properties) {
         // Make sure properties can be removed when applying a different profile
         var props = angular.copy(properties);
         angular.forEach(props, function (prop) {
@@ -1030,7 +1030,7 @@ angular.module('hypermedia')
        * @param {object} profiles an object mapping profile URIs to properties objects as used in
        *                          'Object.defineProperties()'
        */
-      registerProfiles: {value: function (profiles) {
+      registerProfiles: {writable: true, value: function (profiles) {
         angular.forEach(profiles, function (properties, profile) {
           Resource.registerProfile(profile, properties);
         });

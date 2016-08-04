@@ -33,7 +33,7 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $getRequest: {value: function () {
+      $getRequest: {writable: true, value: function () {
         return {
           method: 'get',
           url: this.$uri,
@@ -49,7 +49,7 @@ angular.module('hypermedia')
        * @param {object} [links]
        * @returns all updated resources
        */
-      $update: {value: function (data, links) {
+      $update: {writable: true, value: function (data, links) {
         links = links || {};
         return extractAndUpdateResources(data, links, this, this);
       }}

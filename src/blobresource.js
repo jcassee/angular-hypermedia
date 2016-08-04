@@ -41,7 +41,7 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $getRequest: {value: function () {
+      $getRequest: {writable: true, value: function () {
         return {
           method: 'get',
           url: this.$uri,
@@ -59,7 +59,7 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $putRequest: {value: function () {
+      $putRequest: {writable: true, value: function () {
         return {
           method: 'put',
           url: this.$uri,
@@ -71,7 +71,7 @@ angular.module('hypermedia')
       /**
        * Throw an error. Binary resources have no obvious PATCH semantics.
        */
-      $patchRequest: {value: function () {
+      $patchRequest: {writable: true, value: function () {
         throw new Error('BlobResource does not support the PATCH method');
       }}
     });

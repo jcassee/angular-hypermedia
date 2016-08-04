@@ -44,7 +44,7 @@ angular.module('hypermedia')
         return busyRequests;
       }},
 
-      registerErrorHandler: {value: function (contentType, handler) {
+      registerErrorHandler: {writable: true, value: function (contentType, handler) {
         errorHandlers[contentType] = handler;
       }},
 
@@ -65,7 +65,7 @@ angular.module('hypermedia')
        * @param {ResourceFactory} [Factory] optional resource creation function
        * @returns {Resource}
        */
-      get: {value: function (uri, Factory) {
+      get: {writable: true, value: function (uri, Factory) {
         var resource = this.resources[uri];
         if (!resource) {
           Factory = (Factory || this.resourceFactory);
@@ -82,7 +82,7 @@ angular.module('hypermedia')
        * @param {Resource} resource
        * @returns {Resource} a copy of the resource in this context
        */
-      copy: {value: function (resource) {
+      copy: {writable: true, value: function (resource) {
         var copy = this.get(resource.$uri);
         copy.$update(resource, resource.$links);
         return copy;
@@ -100,7 +100,7 @@ angular.module('hypermedia')
        * @param {string} aliasUri the new URI to point to the original resource
        * @param {string} originalUri the URI of the original resource.
        */
-      addAlias: {value: function (aliasUri, originalUri) {
+      addAlias: {writable: true, value: function (aliasUri, originalUri) {
         if (!this.enableAliases) throw new Error('Resource aliases not enabled');
         this.resources[aliasUri] = this.resources[originalUri];
       }},
@@ -113,7 +113,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$getRequest
        */
-      httpGet: {value: function (resource) {
+      httpGet: {writable: true, value: function (resource) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$getRequest());
@@ -143,7 +143,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$putRequest
        */
-      httpPut: {value: function (resource) {
+      httpPut: {writable: true, value: function (resource) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$putRequest());
@@ -164,7 +164,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$patchRequest
        */
-      httpPatch: {value: function (resource, data) {
+      httpPatch: {writable: true, value: function (resource, data) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$patchRequest(data));
@@ -186,7 +186,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$deleteRequest
        */
-      httpDelete: {value: function (resource) {
+      httpDelete: {writable: true, value: function (resource) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$deleteRequest());
@@ -211,7 +211,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the response
        * @see Resource#$postRequest
        */
-      httpPost: {value: function (resource, data, headers, callback) {
+      httpPost: {writable: true, value: function (resource, data, headers, callback) {
         busyRequests += 1;
         var request = updateHttp(resource.$postRequest(data, headers, callback));
         return $http(request).catch(handleErrorResponse).finally(function () {
@@ -228,7 +228,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved when the resources have been marked
        * @see Resource#syncTime
        */
-      markSynced: {value: function (resources, syncTime) {
+      markSynced: {writable: true, value: function (resources, syncTime) {
         resources = angular.isArray(resources) ? resources : [resources];
         resources.forEach(function (resource) {
           resource.$syncTime = syncTime;
