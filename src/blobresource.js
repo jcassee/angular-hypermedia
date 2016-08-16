@@ -2,38 +2,39 @@
 
 angular.module('hypermedia')
 
-  /**
-   * @ngdoc type
-   * @name BlobResource
-   * @description
-   *
-   * Resource containing binary data.
-   */
-  .factory('BlobResource', ['Resource', function (Resource) {
-
-    /**
-     * Resource with a media type and some data.
-     *
-     * @constructor
-     * @param {string} uri the resource URI
-     * @param {ResourceContext} context the context object
-     */
-    function BlobResource(uri, context) {
-      var instance = Resource.call(this, uri, context);
+/**
+ * @ngdoc type
+ * @name BlobResource
+ * @description
+ *
+ * Resource containing binary data.
+ */
+    .factory('BlobResource', ['Resource', 'HypermediaUtil', function (Resource, HypermediaUtil) {
 
       /**
-       * The resource data.
+       * Resource with a media type and some data.
        *
-       * @type {Blob}
+       * @constructor
+       * @param {string} uri the resource URI
+       * @param {ResourceContext} context the context object
        */
-      instance.data = '';
+      function BlobResource(uri, context) {
+        var instance = Resource.call(this, uri, context);
 
-      return instance;
-    }
+        /**
+         * The resource data.
+         *
+         * @type {Blob}
+         */
+        instance.data = '';
 
-    // Prototype properties
-    BlobResource.prototype = Object.create(Resource.prototype, {
-      constructor: {value: BlobResource},
+        return instance;
+      }
+
+      // Prototype properties
+      BlobResource.prototype = Object.create(Resource.prototype, {
+        constructor: {value: BlobResource}
+      });
 
       /**
        * Create a $http GET request configuration object.
@@ -41,7 +42,7 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $getRequest: {value: function () {
+      HypermediaUtil.defineProperty(BlobResource.prototype, '$getRequest', function () {
         return {
           method: 'get',
           url: this.$uri,
@@ -51,7 +52,7 @@ angular.module('hypermedia')
             return {data: data};
           }
         };
-      }},
+      });
 
       /**
        * Create a $http PUT request configuration object.
@@ -59,24 +60,23 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $putRequest: {value: function () {
+      HypermediaUtil.defineProperty(BlobResource.prototype, '$putRequest', function () {
         return {
           method: 'put',
           url: this.$uri,
           data: this.data,
           headers: {'Content-Type': this.data.type || 'binary/octet-stream'}
         };
-      }},
+      });
 
       /**
        * Throw an error. Binary resources have no obvious PATCH semantics.
        */
-      $patchRequest: {value: function () {
+      HypermediaUtil.defineProperty(BlobResource.prototype, '$patchRequest', function () {
         throw new Error('BlobResource does not support the PATCH method');
-      }}
-    });
+      });
 
-    return BlobResource;
-  }])
+      return BlobResource;
+    }])
 
 ;

@@ -2,113 +2,127 @@
 
 angular.module('hypermedia')
 
-  /**
-   * @ngdoc type
-   * @name Resource
-   * @description
-   *
-   * Hypermedia resource.
-   */
-  .factory('Resource', ['$log', '$q', 'HypermediaUtil', function ($log, $q, HypermediaUtil) {
-    var forArray = HypermediaUtil.forArray;
+/**
+ * @ngdoc type
+ * @name Resource
+ * @description
+ *
+ * Hypermedia resource.
+ */
+    .factory('Resource', ['$log', '$q', 'HypermediaUtil', function ($log, $q, HypermediaUtil) {
+      var forArray = HypermediaUtil.forArray;
 
-    var registeredProfiles = {};
+      var registeredProfiles = {};
 
-    /**
-     * Resource.
-     *
-     * @constructor
-     * @param {string} uri the resource URI
-     * @param {ResourceContext} context the resource context
-     */
-    function Resource(uri, context) {
-      // This constructor does not use the automatically created object but instantiate from a subclass instead
+      /**
+       * Resource.
+       *
+       * @constructor
+       * @param {string} uri the resource URI
+       * @param {ResourceContext} context the resource context
+       */
+      function Resource(uri, context) {
+        // This constructor does not use the automatically created object but instantiate from a subclass instead
 
-      // Intermediate prototype to add profile-specific properties to
-      var prototype = Object.create(Object.getPrototypeOf(this));
+        // Intermediate prototype to add profile-specific properties to
+        var prototype = Object.create(Object.getPrototypeOf(this));
 
-      // Current profile(s)
-      var profile = null;
+        // Current profile(s)
+        var profile = null;
 
-      // Instantiated object
-      return Object.create(prototype, {
+        // Instantiated object
+        return Object.create(prototype, {
 
-        /**
-         * The resource URI.
-         *
-         * @property {string}
-         */
-        $uri: {value: uri},
+          /**
+           * The resource URI.
+           *
+           * @property {string}
+           */
+          $uri: {value: uri},
 
-        /**
-         * The resource context. Can be used to get related resources.
-         *
-         * @property {ResourceContext}
-         */
-        $context: {value: context},
+          /**
+           * The resource context. Can be used to get related resources.
+           *
+           * @property {ResourceContext}
+           */
+          $context: {value: context},
 
-        /**
-         * Links to other resources.
-         *
-         * @property {object}
-         */
-        $links: {value: {
-          self: {
-            href: uri
-          }
-        }, writable: true},
-
-        /**
-         * The timestamp of the last successful GET or PUT request.
-         *
-         * @property {number} Resource.syncTime
-         * @see ResourceContext#markSynced
-         */
-        $syncTime: {value: null, writable: true},
-
-        /**
-         * The resource profile URI(s). If profile properties have been registered for this URI (using
-         * HalContextProvider.registerProfile or ResourceContext.registerProfile), the properties will be defined on the
-         * resource.
-         *
-         * Setting the profile to 'undefined' or 'null' will remove the profile.
-         *
-         * @property {string|string[]}
-         */
-        $profile: {
-          get: function () {
-            return profile;
+          /**
+           * Links to other resources.
+           *
+           * @property {object}
+           */
+          $links: {
+            value: {
+              self: {
+                href: uri
+              }
+            }, writable: true
           },
-          set: function (value) {
-            // Remove old profile properties
-            if (profile) {
-              var oldProfiles = angular.isArray(profile) ? profile : [profile];
-              oldProfiles.forEach(function (profile) {
-                var properties = registeredProfiles[profile] || {};
-                Object.keys(properties).forEach(function (key) {
-                  delete prototype[key];
+
+          /**
+           * The timestamp of the last successful GET or PUT request.
+           *
+           * @property {number} Resource.syncTime
+           * @see ResourceContext#markSynced
+           */
+          $syncTime: {value: null, writable: true},
+
+          /**
+           * The resource profile URI(s). If profile properties have been registered for this URI (using
+           * HalContextProvider.registerProfile or ResourceContext.registerProfile), the properties will be defined on the
+           * resource.
+           *
+           * Setting the profile to 'undefined' or 'null' will remove the profile.
+           *
+           * @property {string|string[]}
+           */
+          $profile: {
+            get: function () {
+              return profile;
+            },
+            set: function (value) {
+              // Remove old profile properties
+              if (profile) {
+                var oldProfiles = angular.isArray(profile) ? profile : [profile];
+                oldProfiles.forEach(function (profile) {
+                  var properties = registeredProfiles[profile] || {};
+                  Object.keys(properties).forEach(function (key) {
+                    delete prototype[key];
+                  });
                 });
-              });
-            }
+              }
 
-            // Apply new profile properties
-            if (value) {
-              var newProfiles = angular.isArray(value) ? value : [value];
-              newProfiles.forEach(function (profile) {
-                var properties = registeredProfiles[profile] || {};
-                Object.defineProperties(prototype, properties);
-              });
-            }
+              // Apply new profile properties
+              if (value) {
+                var newProfiles = angular.isArray(value) ? value : [value];
+                newProfiles.forEach(function (profile) {
+                  var properties = registeredProfiles[profile] || {};
+                  Object.defineProperties(prototype, properties);
+                });
+              }
 
-            profile = value;
+              profile = value;
+            }
+          }
+        });
+      }
+
+      // Prototype properties
+      Resource.prototype = Object.create(Object.prototype, {
+        constructor: {value: Resource},
+        /**
+         * Whether the resource was synchronized with the server.
+         *
+         * @property {boolean}
+         */
+        $isSynced: {
+          get: function () {
+            return !!this.$syncTime;
           }
         }
-      });
-    }
 
-    // Prototype properties
-    Resource.prototype = Object.create(Object.prototype, {
-      constructor: {value: Resource},
+      });
 
       /**
        * Resolve the href of a property.
@@ -118,12 +132,12 @@ angular.module('hypermedia')
        * @param {object} [vars] URI template variables
        * @returns {string|string[]} the link href or hrefs
        */
-      $propHref: {value: function (prop, vars) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$propHref', function (prop, vars) {
         return forArray(this[prop], function (uri) {
           if (vars) uri = new UriTemplate(uri).fillFromObject(vars);
           return uri;
         });
-      }},
+      });
 
       /**
        * Follow a property relation to another resource.
@@ -134,7 +148,7 @@ angular.module('hypermedia')
        * @param {ResourceFactory} [factory] the factory for creating the resource
        * @returns {Resource|Resource[]} the linked resource or resources
        */
-      $propRel: {value: function (prop, vars, factory) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$propRel', function (prop, vars, factory) {
         if (angular.isFunction(vars)) {
           factory = vars;
           vars = undefined;
@@ -142,7 +156,7 @@ angular.module('hypermedia')
         return forArray(this.$propHref(prop, vars), function (uri) {
           return this.$context.get(uri, factory);
         }, this);
-      }},
+      });
 
       /**
        * Resolve the href of a link relation.
@@ -152,7 +166,7 @@ angular.module('hypermedia')
        * @param {object} [vars] URI template variables
        * @returns {string|string[]} the link href or hrefs
        */
-      $linkHref: {value: function (rel, vars) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$linkHref', function (rel, vars) {
         var templated = false;
         var nonTemplated = false;
         var deprecation = {};
@@ -179,7 +193,7 @@ angular.module('hypermedia')
         }
 
         return linkHrefs;
-      }},
+      });
 
       /**
        * Follow a link relation to another resource.
@@ -190,7 +204,7 @@ angular.module('hypermedia')
        * @param {ResourceFactory} [factory] the factory for creating the related resource
        * @returns {Resource|Resource[]} the linked resource or resources
        */
-      $linkRel: {value: function (rel, vars, factory) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$linkRel', function (rel, vars, factory) {
         if (angular.isFunction(vars)) {
           factory = vars;
           vars = undefined;
@@ -198,7 +212,7 @@ angular.module('hypermedia')
         return forArray(this.$linkHref(rel, vars), function (uri) {
           return this.$context.get(uri, factory);
         }, this);
-      }},
+      });
 
       /**
        * Perform an HTTP GET request if the resource is not synchronized or if
@@ -209,13 +223,13 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$syncTime
        */
-      $load: {value: function (ts) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$load', function (ts) {
         if (!this.$syncTime || (ts && this.$syncTime < ts)) {
           return this.$context.httpGet(this);
         } else {
           return $q.when(this);
         }
-      }},
+      });
 
       /**
        * Perform an HTTP GET request if the resource was synced before
@@ -226,10 +240,10 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$syncTime
        */
-      $refresh: {value: function (ts) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$refresh', function (ts) {
         if (!ts) ts = Date.now();
         return this.$load(ts);
-      }},
+      });
 
       /**
        * Load all resources reachable from a resource using one or more paths.
@@ -260,7 +274,7 @@ angular.module('hypermedia')
        *                   paths have been loaded
        * @see {@link #$load}
        */
-      $loadPaths: {value: function (paths, ts, path_prefix, root_uri) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$loadPaths', function (paths, ts, path_prefix, root_uri) {
         var self = this;
         if (!path_prefix) {
           path_prefix = [];
@@ -288,7 +302,7 @@ angular.module('hypermedia')
         }).then(function () {
           return self;
         });
-      }},
+      });
 
       /**
        * Refresh all resources reachable from a resource using one or more paths.
@@ -301,10 +315,10 @@ angular.module('hypermedia')
        *                   paths have been loaded
        * @see {@link #$loadPaths}
        */
-      $refreshPaths: {value: function (paths, ts) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$refreshPaths', function (paths, ts) {
         if (!ts) ts = Date.now();
         return this.$loadPaths(paths, ts);
-      }},
+      });
 
       /**
        * Create a $http GET request configuration object.
@@ -312,13 +326,13 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $getRequest: {value: function () {
+      HypermediaUtil.defineProperty(Resource.prototype, '$getRequest', function () {
         return {
           method: 'get',
           url: this.$uri,
           headers: {'Accept': 'application/json'}
         };
-      }},
+      });
 
       /**
        * Perform an HTTP GET request.
@@ -326,9 +340,9 @@ angular.module('hypermedia')
        * @function
        * @returns a promise that is resolved to the resource
        */
-      $get: {value: function () {
+      HypermediaUtil.defineProperty(Resource.prototype, '$get', function () {
         return this.$context.httpGet(this);
-      }},
+      });
 
       /**
        * Create a $http PUT request configuration object.
@@ -336,14 +350,14 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $putRequest: {value: function () {
+      HypermediaUtil.defineProperty(Resource.prototype, '$putRequest', function () {
         return {
           method: 'put',
           url: this.$uri,
           data: this,
           headers: {'Content-Type': 'application/json'}
         };
-      }},
+      });
 
       /**
        * Perform an HTTP PUT request with the resource state.
@@ -351,9 +365,9 @@ angular.module('hypermedia')
        * @function
        * @returns a promise that is resolved to the resource
        */
-      $put: {value: function () {
+      HypermediaUtil.defineProperty(Resource.prototype, '$put', function () {
         return this.$context.httpPut(this);
-      }},
+      });
 
       /**
        * Create a $http PATCH request configuration object.
@@ -361,14 +375,14 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $patchRequest: {value: function (data) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$patchRequest', function (data) {
         return {
           method: 'patch',
           url: this.$uri,
           data: data,
           headers: {'Content-Type': 'application/merge-patch+json'}
         };
-      }},
+      });
 
       /**
        * Perform an HTTP PATCH request with the resource state.
@@ -376,9 +390,9 @@ angular.module('hypermedia')
        * @function
        * @returns a promise that is resolved to the resource
        */
-      $patch: {value: function (data) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$patch', function (data) {
         return this.$context.httpPatch(this, data);
-      }},
+      });
 
       /**
        * Create a $http DELETE request configuration object.
@@ -386,12 +400,12 @@ angular.module('hypermedia')
        * @function
        * @returns {object}
        */
-      $deleteRequest: {value: function () {
+      HypermediaUtil.defineProperty(Resource.prototype, '$deleteRequest', function () {
         return {
           method: 'delete',
           url: this.$uri
         };
-      }},
+      });
 
       /**
        * Perform an HTTP DELETE request.
@@ -399,9 +413,9 @@ angular.module('hypermedia')
        * @function
        * @returns a promise that is resolved to the resource
        */
-      $delete: {value: function () {
+      HypermediaUtil.defineProperty(Resource.prototype, '$delete', function () {
         return this.$context.httpDelete(this);
-      }},
+      });
 
       /**
        * Create a $http POST request configuration object.
@@ -412,7 +426,7 @@ angular.module('hypermedia')
        * @param {ConfigHttp} [callback] a function that changes the $http request config
        * @returns {object}
        */
-      $postRequest: {value: function (data, headers, callback) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$postRequest', function (data, headers, callback) {
         callback = callback || angular.identity;
         return callback({
           method: 'post',
@@ -420,7 +434,7 @@ angular.module('hypermedia')
           data: data,
           headers: headers || {}
         });
-      }},
+      });
 
       /**
        * Perform an HTTP POST request.
@@ -431,9 +445,9 @@ angular.module('hypermedia')
        * @param {ConfigHttp} [callback] a function that changes the $http request config
        * @returns a promise that is resolved to the response
        */
-      $post: {value: function (data, headers, callback) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$post', function (data, headers, callback) {
         return this.$context.httpPost(this, data, headers, callback);
-      }},
+      });
 
       /**
        * Update the resource with new data by clearing all existing properties
@@ -444,7 +458,7 @@ angular.module('hypermedia')
        * @param {object} [links]
        * @returns the resource
        */
-      $update: {value: function (data, links) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$update', function (data, links) {
         links = links || {};
         var selfHref = ((links || {}).self || {}).href;
         if (selfHref && selfHref !== this.$uri) {
@@ -452,7 +466,7 @@ angular.module('hypermedia')
             this.$context.addAlias(selfHref, this.$uri);
           } else {
             throw new Error('Self link href differs: expected "' + this.$uri + '", was ' +
-              angular.toJson(selfHref));
+                angular.toJson(selfHref));
           }
         }
 
@@ -478,7 +492,7 @@ angular.module('hypermedia')
         if (profileUris) this.$profile = profileUris;
 
         return this;
-      }},
+      });
 
       /**
        * Merges the resource with new data following algorithm defined
@@ -489,7 +503,7 @@ angular.module('hypermedia')
        * @param {object} [links]
        * @returns the resource
        */
-      $merge: {value: function (data) {
+      HypermediaUtil.defineProperty(Resource.prototype, '$merge', function (data) {
         var mergePatch = function (target, patch) {
           if (!angular.isObject(patch) || patch === null || Array.isArray(patch)) {
             return patch;
@@ -512,20 +526,10 @@ angular.module('hypermedia')
         };
 
         return mergePatch(this, data);
-      }},
+      });
 
-      /**
-       * Whether the resource was synchronized with the server.
-       *
-       * @property {boolean}
-       */
-      $isSynced: {get: function () {
-        return !!this.$syncTime;
-      }}
-    });
 
-    // Class properties
-    Object.defineProperties(Resource, {
+      // Class properties
 
       /**
        * Register a profile.
@@ -534,14 +538,14 @@ angular.module('hypermedia')
        * @param {string} profile the profile URI
        * @param {object} properties a properties object as used in 'Object.defineProperties()'
        */
-      registerProfile: {value: function (profile, properties) {
+      HypermediaUtil.defineProperty(Resource, 'registerProfile', function (profile, properties) {
         // Make sure properties can be removed when applying a different profile
         var props = angular.copy(properties);
         angular.forEach(props, function (prop) {
           prop.configurable = true;
         });
         registeredProfiles[profile] = props;
-      }},
+      });
 
       /**
        * Register profiles.
@@ -550,15 +554,14 @@ angular.module('hypermedia')
        * @param {object} profiles an object mapping profile URIs to properties objects as used in
        *                          'Object.defineProperties()'
        */
-      registerProfiles: {value: function (profiles) {
+      HypermediaUtil.defineProperty(Resource, 'registerProfiles', function (profiles) {
         angular.forEach(profiles, function (properties, profile) {
           Resource.registerProfile(profile, properties);
         });
-      }}
-    });
+      });
 
-    return Resource;
-  }])
+      return Resource;
+    }])
 
 ;
 
