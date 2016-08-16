@@ -2,60 +2,65 @@
 
 angular.module('hypermedia')
 
-  /**
-   * @ngdoc type
-   * @name ResourceContext
-   * @description
-   *
-   * Context for working with hypermedia resources. The context has methods
-   * for making HTTP requests and acts as an identity map.
-   */
-  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', function ($http, $log, $q, Resource) {
+/**
+ * @ngdoc type
+ * @name ResourceContext
+ * @description
+ *
+ * Context for working with hypermedia resources. The context has methods
+ * for making HTTP requests and acts as an identity map.
+ */
+    .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', 'HypermediaUtil', function ($http, $log, $q, Resource, HypermediaUtil) {
 
-    var busyRequests = 0;
-    var errorHandlers = {};
-
-    /**
-     * Resource context.
-     *
-     * @constructor
-     * @param {ResourceFactory} [resourceFactory]
-     */
-    function ResourceContext(resourceFactory) {
-      this.resourceFactory = resourceFactory || ResourceContext.defaultResourceFactory;
-      this.resources = {};
-    }
-
-    Object.defineProperties(ResourceContext, {
+      var busyRequests = 0;
+      var errorHandlers = {};
 
       /**
-       * The default resource factory.
+       * Resource context.
        *
-       * @property {resourceFactory}
+       * @constructor
+       * @param {ResourceFactory} [resourceFactory]
        */
-      defaultResourceFactory: {value: Resource, writable: true},
+      function ResourceContext(resourceFactory) {
+        this.resourceFactory = resourceFactory || ResourceContext.defaultResourceFactory;
+        this.resources = {};
+      }
 
-      /**
-       * The number of current HTTP requests.
-       *
-       * @property {number}
-       */
-      busyRequests: {get: function () {
-        return busyRequests;
-      }},
+      Object.defineProperties(ResourceContext, {
 
-      registerErrorHandler: {writable: true, value: function (contentType, handler) {
-        errorHandlers[contentType] = handler;
-      }},
+        /**
+         * The default resource factory.
+         *
+         * @property {resourceFactory}
+         */
+        defaultResourceFactory: {value: Resource, writable: true},
 
-      /**
-       * Whether resource aliases are allowed by default.
-       */
-      defaultEnableAliases: {value: true, writable: true}
-    });
+        /**
+         * The number of current HTTP requests.
+         *
+         * @property {number}
+         */
+        busyRequests: {
+          get: function () {
+            return busyRequests;
+          }
+        },
 
-    ResourceContext.prototype = Object.create(Object.prototype, {
-      constructor: {value: ResourceContext},
+        registerErrorHandler: {
+          writable: true, value: function (contentType, handler) {
+            errorHandlers[contentType] = handler;
+          }
+        },
+
+        /**
+         * Whether resource aliases are allowed by default.
+         */
+        defaultEnableAliases: {value: true, writable: true}
+      });
+
+      ResourceContext.prototype = Object.create(Object.prototype, {
+        constructor: {value: ResourceContext}
+      });
 
       /**
        * Get the resource for an URI. Creates a new resource if not already in the context.
@@ -65,7 +70,7 @@ angular.module('hypermedia')
        * @param {ResourceFactory} [Factory] optional resource creation function
        * @returns {Resource}
        */
-      get: {writable: true, value: function (uri, Factory) {
+      HypermediaUtil.defineProperty(ResourceContext.prototype, 'get', function (uri, Factory) {
         var resource = this.resources[uri];
         if (!resource) {
           Factory = (Factory || this.resourceFactory);
@@ -73,7 +78,7 @@ angular.module('hypermedia')
           resource = this.resources[uri] = new Factory(uri, this);
         }
         return resource;
-      }},
+      });
 
       /**
        * Copy a resource into this context.
@@ -82,16 +87,16 @@ angular.module('hypermedia')
        * @param {Resource} resource
        * @returns {Resource} a copy of the resource in this context
        */
-      copy: {writable: true, value: function (resource) {
+      HypermediaUtil.defineProperty(ResourceContext.prototype, 'copy', function (resource) {
         var copy = this.get(resource.$uri);
         copy.$update(resource, resource.$links);
         return copy;
-      }},
+      });
 
       /**
-       * Whether resaurce aliases are enabled. If false, context.addAlias throws an error.
+       * Whether resource aliases are enabled. If false, context.addAlias throws an error.
        */
-      enableAliases: {value: ResourceContext.defaultEnableAliases, writable: true},
+      HypermediaUtil.defineProperty(ResourceContext.prototype, 'enableAliases', ResourceContext.defaultEnableAliases);
 
       /**
        * Adds an alias to an existing resource.
@@ -100,10 +105,10 @@ angular.module('hypermedia')
        * @param {string} aliasUri the new URI to point to the original resource
        * @param {string} originalUri the URI of the original resource.
        */
-      addAlias: {writable: true, value: function (aliasUri, originalUri) {
+      HypermediaUtil.defineProperty(ResourceContext.prototype, 'addAlias', function (aliasUri, originalUri) {
         if (!this.enableAliases) throw new Error('Resource aliases not enabled');
         this.resources[aliasUri] = this.resources[originalUri];
-      }},
+      });
 
       /**
        * Perform a HTTP GET request on a resource.
@@ -113,7 +118,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$getRequest
        */
-      httpGet: {writable: true, value: function (resource) {
+      HypermediaUtil.defineProperty(ResourceContext.prototype, 'httpGet', function (resource) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$getRequest());
@@ -133,7 +138,7 @@ angular.module('hypermedia')
         }).finally(function () {
           busyRequests -= 1;
         });
-      }},
+      });
 
       /**
        * Perform a HTTP PUT request.
@@ -143,7 +148,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$putRequest
        */
-      httpPut: {writable: true, value: function (resource) {
+      HypermediaUtil.defineProperty(ResourceContext.prototype, 'httpPut', function (resource) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$putRequest());
@@ -154,7 +159,7 @@ angular.module('hypermedia')
         }).finally(function () {
           busyRequests -= 1;
         });
-      }},
+      });
 
       /**
        * Perform a HTTP PATCH request.
@@ -164,7 +169,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$patchRequest
        */
-      httpPatch: {writable: true, value: function (resource, data) {
+      HypermediaUtil.defineProperty(ResourceContext.prototype, 'httpPatch', function (resource, data) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$patchRequest(data));
@@ -176,7 +181,7 @@ angular.module('hypermedia')
         }).finally(function () {
           busyRequests -= 1;
         });
-      }},
+      });
 
       /**
        * Perform a HTTP DELETE request and unmark the resource as synchronized.
@@ -186,7 +191,7 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the resource
        * @see Resource#$deleteRequest
        */
-      httpDelete: {writable: true, value: function (resource) {
+      HypermediaUtil.defineProperty(ResourceContext.prototype, 'httpDelete', function (resource) {
         var self = this;
         busyRequests += 1;
         var request = updateHttp(resource.$deleteRequest());
@@ -198,7 +203,7 @@ angular.module('hypermedia')
         }).finally(function () {
           busyRequests -= 1;
         });
-      }},
+      });
 
       /**
        * Perform a HTTP POST request.
@@ -211,13 +216,13 @@ angular.module('hypermedia')
        * @returns a promise that is resolved to the response
        * @see Resource#$postRequest
        */
-      httpPost: {writable: true, value: function (resource, data, headers, callback) {
+      HypermediaUtil.defineProperty(ResourceContext.prototype, 'httpPost', function (resource, data, headers, callback) {
         busyRequests += 1;
         var request = updateHttp(resource.$postRequest(data, headers, callback));
         return $http(request).catch(handleErrorResponse).finally(function () {
           busyRequests -= 1;
         });
-      }},
+      });
 
       /**
        * Mark a resource as synchronized with the server.
@@ -228,49 +233,41 @@ angular.module('hypermedia')
        * @returns a promise that is resolved when the resources have been marked
        * @see Resource#syncTime
        */
-      markSynced: {writable: true, value: function (resources, syncTime) {
+      HypermediaUtil.defineProperty(ResourceContext.prototype, 'markSynced', function (resources, syncTime) {
         resources = angular.isArray(resources) ? resources : [resources];
         resources.forEach(function (resource) {
           resource.$syncTime = syncTime;
         });
         return $q.when();
-      }}
-    });
-
-    return ResourceContext;
+      });
 
 
-    function appendTransform(defaults, transform) {
-      if (!transform) return defaults;
-      defaults = angular.isArray(defaults) ? defaults : [defaults];
-      return defaults.concat(transform);
-    }
+      return ResourceContext;
 
-    function updateHttp(config) {
-      config.transformRequest = appendTransform($http.defaults.transformRequest, config.addTransformRequest);
-      config.transformResponse = appendTransform($http.defaults.transformResponse, config.addTransformResponse);
-      return config;
-    }
 
-    function parseLinkHeader(header) {
-      return header ? linkHeaderParser.parse(header) : {};
-    }
+      function appendTransform(defaults, transform) {
+        if (!transform) return defaults;
+        defaults = angular.isArray(defaults) ? defaults : [defaults];
+        return defaults.concat(transform);
+      }
 
-    function handleErrorResponse(response) {
-      var contentType = response.headers('Content-Type');
-      var handler = errorHandlers[contentType];
-      response.error = (handler ? handler(response) : {message: response.statusText});
-      return $q.reject(response);
-    }
-  }])
+      function updateHttp(config) {
+        config.transformRequest = appendTransform($http.defaults.transformRequest, config.addTransformRequest);
+        config.transformResponse = appendTransform($http.defaults.transformResponse, config.addTransformResponse);
+        return config;
+      }
+
+      function parseLinkHeader(header) {
+        return header ? linkHeaderParser.parse(header) : {};
+      }
+
+      function handleErrorResponse(response) {
+        var contentType = response.headers('Content-Type');
+        var handler = errorHandlers[contentType];
+        response.error = (handler ? handler(response) : {message: response.statusText});
+        return $q.reject(response);
+      }
+    }])
 
 ;
 
-/**
- * A callback function used by the context to create resources. Will be called
- * with the 'new' operator, so can be a constructor.
- *
- * @callback ResourceFactory
- * @returns {Resource} the created resource
- * @see ResourceContext
- */
