@@ -21,7 +21,7 @@ angular.module('hypermedia')
    *
    * Resource containing binary data.
    */
-  .factory('BlobResource', ['Resource', function (Resource) {
+  .factory('BlobResource', ['Resource', 'HypermediaUtil', function (Resource, HypermediaUtil) {
 
     /**
      * Resource with a media type and some data.
@@ -45,8 +45,10 @@ angular.module('hypermedia')
 
     // Prototype properties
     BlobResource.prototype = Object.create(Resource.prototype, {
-      constructor: {value: BlobResource},
+      constructor: {value: BlobResource}
+    });
 
+    BlobResource.prototype = HypermediaUtil.defineProperties(BlobResource.prototype, {
       /**
        * Create a $http GET request configuration object.
        *
@@ -105,7 +107,7 @@ angular.module('hypermedia')
    * Context for working with hypermedia resources. The context has methods
    * for making HTTP requests and acts as an identity map.
    */
-  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', function ($http, $log, $q, Resource) {
+  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', 'HypermediaUtil', function ($http, $log, $q, Resource, HypermediaUtil) {
 
     var busyRequests = 0;
     var errorHandlers = {};
@@ -150,8 +152,10 @@ angular.module('hypermedia')
     });
 
     ResourceContext.prototype = Object.create(Object.prototype, {
-      constructor: {value: ResourceContext},
+      constructor: {value: ResourceContext}
+    });
 
+    ResourceContext.prototype = HypermediaUtil.defineProperties(ResourceContext.prototype, {
       /**
        * Get the resource for an URI. Creates a new resource if not already in the context.
        *
@@ -397,8 +401,10 @@ angular.module('hypermedia')
 
     // Prototype properties
     HalResource.prototype = Object.create(Resource.prototype, {
-      constructor: {value: HalResource},
+      constructor: {value: HalResource}
+    });
 
+    HalResource.prototype = HypermediaUtil.defineProperties(HalResource.prototype, {
       /**
        * Create a $http GET request configuration object.
        *
@@ -590,6 +596,17 @@ angular.module('hypermedia')
     Resource.prototype = Object.create(Object.prototype, {
       constructor: {value: Resource},
 
+      /**
+       * Whether the resource was synchronized with the server.
+       *
+       * @property {boolean}
+       */
+      $isSynced: {get: function () {
+        return !!this.$syncTime;
+      }}
+    });
+
+    Resource.prototype = HypermediaUtil.defineProperties(Resource.prototype, {
       /**
        * Resolve the href of a property.
        *
@@ -992,20 +1009,11 @@ angular.module('hypermedia')
         };
 
         return mergePatch(this, data);
-      }},
-
-      /**
-       * Whether the resource was synchronized with the server.
-       *
-       * @property {boolean}
-       */
-      $isSynced: {get: function () {
-        return !!this.$syncTime;
       }}
     });
 
     // Class properties
-    Object.defineProperties(Resource, {
+    HypermediaUtil.defineProperties(Resource, {
 
       /**
        * Register a profile.
@@ -1081,6 +1089,22 @@ angular.module('hypermedia')
         } else {
           return func.call(context,  arg);
         }
+      },
+      defineProperties: function defineProperties(obj, props) {
+        for (var propertyName in props) {
+          if (props.hasOwnProperty(propertyName)) {
+            var writable = true;
+            var property = props[propertyName];
+            if (property.hasOwnProperty('writable')) {
+              writable = property.writable;
+            }
+            obj = Object.defineProperty(obj, propertyName, {
+              value: property.value,
+              writable: writable
+            });
+          }
+        }
+        return obj;
       }
     };
   })

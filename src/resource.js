@@ -527,7 +527,7 @@ angular.module('hypermedia')
     });
 
     // Class properties
-    Resource = HypermediaUtil.defineProperties(Resource, {
+    HypermediaUtil.defineProperties(Resource, {
 
       /**
        * Register a profile.

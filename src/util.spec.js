@@ -129,7 +129,9 @@ describe('HypermediaUtil', function () {
       // test if properties are writable
       obj.property1 = "mutated";
 
-      expect( function(){ obj.property2 = "written"; } ).toThrow(new TypeError("Attempted to assign to readonly property."));
+      expect(function () {
+        obj.property2 = "written";
+      }).toThrow(new TypeError("Attempted to assign to readonly property."));
 
       expect(obj.property1).toEqual("mutated");
       expect(obj.property2).toEqual("read-only");
