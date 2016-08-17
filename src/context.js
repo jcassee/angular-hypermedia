@@ -10,7 +10,7 @@ angular.module('hypermedia')
    * Context for working with hypermedia resources. The context has methods
    * for making HTTP requests and acts as an identity map.
    */
-  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', function ($http, $log, $q, Resource) {
+  .factory('ResourceContext', ['$http', '$log', '$q', 'Resource', 'HypermediaUtil', function ($http, $log, $q, Resource, HypermediaUtil) {
 
     var busyRequests = 0;
     var errorHandlers = {};
@@ -55,8 +55,10 @@ angular.module('hypermedia')
     });
 
     ResourceContext.prototype = Object.create(Object.prototype, {
-      constructor: {value: ResourceContext},
+      constructor: {value: ResourceContext}
+    });
 
+    ResourceContext.prototype = HypermediaUtil.defineProperties(ResourceContext.prototype, {
       /**
        * Get the resource for an URI. Creates a new resource if not already in the context.
        *

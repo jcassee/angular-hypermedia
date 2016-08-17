@@ -29,6 +29,22 @@ angular.module('hypermedia')
         } else {
           return func.call(context,  arg);
         }
+      },
+      defineProperties: function defineProperties(obj, props) {
+        for (var propertyName in props) {
+          if (props.hasOwnProperty(propertyName)) {
+            var writable = true;
+            var property = props[propertyName];
+            if (property.hasOwnProperty('writable')) {
+              writable = property.writable;
+            }
+            obj = Object.defineProperty(obj, propertyName, {
+              value: property.value,
+              writable: writable
+            });
+          }
+        }
+        return obj;
       }
     };
   })

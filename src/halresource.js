@@ -25,8 +25,10 @@ angular.module('hypermedia')
 
     // Prototype properties
     HalResource.prototype = Object.create(Resource.prototype, {
-      constructor: {value: HalResource},
+      constructor: {value: HalResource}
+    });
 
+    HalResource.prototype = HypermediaUtil.defineProperties(HalResource.prototype, {
       /**
        * Create a $http GET request configuration object.
        *

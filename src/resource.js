@@ -111,6 +111,17 @@ angular.module('hypermedia')
       constructor: {value: Resource},
 
       /**
+       * Whether the resource was synchronized with the server.
+       *
+       * @property {boolean}
+       */
+      $isSynced: {get: function () {
+        return !!this.$syncTime;
+      }}
+    });
+
+    Resource.prototype = HypermediaUtil.defineProperties(Resource.prototype, {
+      /**
        * Resolve the href of a property.
        *
        * @function
@@ -512,20 +523,11 @@ angular.module('hypermedia')
         };
 
         return mergePatch(this, data);
-      }},
-
-      /**
-       * Whether the resource was synchronized with the server.
-       *
-       * @property {boolean}
-       */
-      $isSynced: {get: function () {
-        return !!this.$syncTime;
       }}
     });
 
     // Class properties
-    Object.defineProperties(Resource, {
+    Resource = HypermediaUtil.defineProperties(Resource, {
 
       /**
        * Register a profile.

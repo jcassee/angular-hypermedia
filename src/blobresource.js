@@ -9,7 +9,7 @@ angular.module('hypermedia')
    *
    * Resource containing binary data.
    */
-  .factory('BlobResource', ['Resource', function (Resource) {
+  .factory('BlobResource', ['Resource', 'HypermediaUtil', function (Resource, HypermediaUtil) {
 
     /**
      * Resource with a media type and some data.
@@ -33,8 +33,10 @@ angular.module('hypermedia')
 
     // Prototype properties
     BlobResource.prototype = Object.create(Resource.prototype, {
-      constructor: {value: BlobResource},
+      constructor: {value: BlobResource}
+    });
 
+    BlobResource.prototype = HypermediaUtil.defineProperties(BlobResource.prototype, {
       /**
        * Create a $http GET request configuration object.
        *
