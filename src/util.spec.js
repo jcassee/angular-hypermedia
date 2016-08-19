@@ -79,8 +79,7 @@ describe('HypermediaUtil', function () {
         }
       };
 
-      obj = defineProperties(obj, props);
-
+      defineProperties(obj, props);
 
       expect(obj.property1).toBeTruthy();
       expect(obj.property2).toBeTruthy();
@@ -100,7 +99,7 @@ describe('HypermediaUtil', function () {
             }
           };
 
-      obj = defineProperties(obj, props);
+      defineProperties(obj, props);
 
       // test if properties are writable
       obj.property1 = false;
@@ -124,7 +123,7 @@ describe('HypermediaUtil', function () {
         }
       };
 
-      obj = defineProperties(obj, props);
+      defineProperties(obj, props);
 
       // test if properties are writable
       obj.property1 = "mutated";

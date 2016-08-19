@@ -36,7 +36,7 @@ angular.module('hypermedia')
       constructor: {value: BlobResource}
     });
 
-    BlobResource.prototype = HypermediaUtil.defineProperties(BlobResource.prototype, {
+    HypermediaUtil.defineProperties(BlobResource.prototype, {
       /**
        * Create a $http GET request configuration object.
        *

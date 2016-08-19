@@ -30,21 +30,16 @@ angular.module('hypermedia')
           return func.call(context,  arg);
         }
       },
+
+      /**
+       * Call Object.defineProperties but configure all properties as writable.
+       */
       defineProperties: function defineProperties(obj, props) {
-        for (var propertyName in props) {
-          if (props.hasOwnProperty(propertyName)) {
-            var writable = true;
-            var property = props[propertyName];
-            if (property.hasOwnProperty('writable')) {
-              writable = property.writable;
-            }
-            obj = Object.defineProperty(obj, propertyName, {
-              value: property.value,
-              writable: writable
-            });
-          }
-        }
-        return obj;
+        props = angular.copy(props);
+        angular.forEach(props, function (prop) {
+          if (!('writable' in prop)) prop.writable = true;
+        });
+        Object.defineProperties(obj, props);
       }
     };
   })

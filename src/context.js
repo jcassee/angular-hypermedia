@@ -58,7 +58,7 @@ angular.module('hypermedia')
       constructor: {value: ResourceContext}
     });
 
-    ResourceContext.prototype = HypermediaUtil.defineProperties(ResourceContext.prototype, {
+    HypermediaUtil.defineProperties(ResourceContext.prototype, {
       /**
        * Get the resource for an URI. Creates a new resource if not already in the context.
        *

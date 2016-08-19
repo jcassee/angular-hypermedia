@@ -120,7 +120,7 @@ angular.module('hypermedia')
       }}
     });
 
-    Resource.prototype = HypermediaUtil.defineProperties(Resource.prototype, {
+    HypermediaUtil.defineProperties(Resource.prototype, {
       /**
        * Resolve the href of a property.
        *
