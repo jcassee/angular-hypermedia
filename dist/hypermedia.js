@@ -3,7 +3,7 @@
 /**
  * @ngdoc module
  * @name halresource
- * @version 0.10.0
+ * @version 0.10.1
  * @description
  *
  * This module contains classes and services to work with hypermedia APIs.
@@ -48,7 +48,7 @@ angular.module('hypermedia')
       constructor: {value: BlobResource}
     });
 
-    BlobResource.prototype = HypermediaUtil.defineProperties(BlobResource.prototype, {
+    HypermediaUtil.defineProperties(BlobResource.prototype, {
       /**
        * Create a $http GET request configuration object.
        *
@@ -155,7 +155,7 @@ angular.module('hypermedia')
       constructor: {value: ResourceContext}
     });
 
-    ResourceContext.prototype = HypermediaUtil.defineProperties(ResourceContext.prototype, {
+    HypermediaUtil.defineProperties(ResourceContext.prototype, {
       /**
        * Get the resource for an URI. Creates a new resource if not already in the context.
        *
@@ -404,7 +404,7 @@ angular.module('hypermedia')
       constructor: {value: HalResource}
     });
 
-    HalResource.prototype = HypermediaUtil.defineProperties(HalResource.prototype, {
+    HypermediaUtil.defineProperties(HalResource.prototype, {
       /**
        * Create a $http GET request configuration object.
        *
@@ -606,7 +606,7 @@ angular.module('hypermedia')
       }}
     });
 
-    Resource.prototype = HypermediaUtil.defineProperties(Resource.prototype, {
+    HypermediaUtil.defineProperties(Resource.prototype, {
       /**
        * Resolve the href of a property.
        *
@@ -1090,21 +1090,16 @@ angular.module('hypermedia')
           return func.call(context,  arg);
         }
       },
+
+      /**
+       * Call Object.defineProperties but configure all properties as writable.
+       */
       defineProperties: function defineProperties(obj, props) {
-        for (var propertyName in props) {
-          if (props.hasOwnProperty(propertyName)) {
-            var writable = true;
-            var property = props[propertyName];
-            if (property.hasOwnProperty('writable')) {
-              writable = property.writable;
-            }
-            obj = Object.defineProperty(obj, propertyName, {
-              value: property.value,
-              writable: writable
-            });
-          }
-        }
-        return obj;
+        props = angular.copy(props);
+        angular.forEach(props, function (prop) {
+          if (!('writable' in prop)) prop.writable = true;
+        });
+        Object.defineProperties(obj, props);
       }
     };
   })

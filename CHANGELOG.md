@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.1
+
+- Make prototype properties writable to aid testing using mocks.
+
 ## 0.10.0
 
 - Add URI aliases.
