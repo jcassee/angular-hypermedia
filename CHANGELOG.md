@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.2
+
+- Fix bug updating resource without embedded resources.
+
 ## 0.10.1
 
 - Make prototype properties writable to aid testing using mocks.
