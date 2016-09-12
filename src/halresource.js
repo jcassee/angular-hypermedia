@@ -81,7 +81,7 @@ angular.module('hypermedia')
       delete data._links;
 
       // Extract and update embedded resources
-      Object.keys(data._embedded || []).forEach(function (rel) {
+      Object.keys(data._embedded || {}).forEach(function (rel) {
         var embeds = data._embedded[rel];
 
         // Add link to embedded resource if missing
