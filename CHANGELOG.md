@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0
+
+Mark package as stable. No functional changes.
+
 ## 0.10.2
 
 - Fix bug updating resource without embedded resources.
