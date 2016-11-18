@@ -4,7 +4,7 @@
   "description": "Hypermedia REST API client for AngularJS applications",
   "repository": "https://github.com/jcassee/angular-hypermedia",
   "license": "MIT",
-  "main": "dist/hypermedia.js",
+  "main": "index.js",
   "dependencies": {
     "angular": "^1.3",
     "linkheader-parser": "^0.1",
