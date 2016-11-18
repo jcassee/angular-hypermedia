@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Make proper CommonJS module. (Sander Smeman)
+
 ## 1.0.0
 
 Mark package as stable. No functional changes.
