@@ -60,6 +60,31 @@ angular.module('hypermedia')
 
     HypermediaUtil.defineProperties(ResourceContext.prototype, {
       /**
+       * Initially empty array to store the requests that are made.
+       *
+       * Requests will have the {string} uri as a key and the {number} timestamp when the resource has last been requested.
+       */
+      cachedRequestsMap: {value: {} },
+
+      /**
+       * Check if a request has to be served from cache based on the URI.
+       *
+       * @function
+       * @param {string} uri the resource URI
+       * @param {number} timestamp to check against
+       */
+      serveRequestFromCache: {value: function(uri, ts) {
+        var self = this;
+        var lastSynced = self.cachedRequestsMap[uri] || -1;
+
+        if (!ts || lastSynced < ts) {
+          self.cachedRequestsMap[uri] = Date.now();
+          return false;
+        }
+        return true;
+      }},
+
+      /**
        * Get the resource for an URI. Creates a new resource if not already in the context.
        *
        * @function
