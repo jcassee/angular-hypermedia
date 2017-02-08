@@ -193,7 +193,7 @@ state. `Resource` uses [JSON Merge Patch](https://tools.ietf.org/html/rfc7386).
 It is a very simple JSON patch format suitable for describing modifications to
 JSON documents that primarily use objects for their structure and do not make
 use of explicit `null` values. Subclasses of `Resource` may choose to support
-other formats by overriding the `$putRequest` method.
+other formats by overriding the `$patchRequest` method.
 
 The `$patch` method accepts a mapping of (new or existing) properties to updated
 values; mapping a property to `null` will delete the property. Objects are
