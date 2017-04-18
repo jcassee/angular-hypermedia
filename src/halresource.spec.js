@@ -37,6 +37,16 @@ describe('HalResource', function () {
     });
   });
 
+  it('creates HTTP GET request for HAL data with additional GET parameters', function () {
+    var params = {name: 'John'};
+    expect(resource.$getRequest(params)).toEqual({
+      method: 'get',
+      url: 'http://example.com',
+      params: params,
+      headers: {Accept: 'application/hal+json'}
+    });
+  });
+
   it('creates HTTP PUT request with JSON data', function () {
     expect(resource.$putRequest()).toEqual({
       method: 'put',

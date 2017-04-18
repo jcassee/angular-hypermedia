@@ -115,6 +115,13 @@ describe('ResourceContext', function () {
     expect(resource.$syncTime / 100).toBeCloseTo(Date.now() / 100, 0);
   });
 
+  it('performs HTTP GET request with additional GET parameters', function () {
+    context.httpGet(resource, {name: 'John'});
+    $httpBackend.expectGET(resource.$uri + '?name=John')
+        .respond('{}', {'Content-Type': 'application/json'});
+    $httpBackend.flush();
+  });
+
   it('converts content type profile parameter to link', function () {
     var promiseResult = null;
     context.httpGet(resource).then(function (result) {

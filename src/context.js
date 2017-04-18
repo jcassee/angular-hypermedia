@@ -112,13 +112,14 @@ angular.module('hypermedia')
        *
        * @function
        * @param {Resource} resource
+       * @param {object} [params] additional GET parameters
        * @returns a promise that is resolved to the resource
        * @see Resource#$getRequest
        */
-      httpGet: {value: function (resource) {
+      httpGet: {value: function (resource, params) {
         var self = this;
         busyRequests += 1;
-        var request = updateHttp(resource.$getRequest());
+        var request = updateHttp(resource.$getRequest(params));
         return $http(request).then(function (response) {
           var links = parseLinkHeader(response.headers('Link'));
 

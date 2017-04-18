@@ -391,6 +391,16 @@ describe('Resource', function () {
     });
   });
 
+  it('creates HTTP GET request with additional GET parameters', function () {
+    var params = {name: 'John'};
+    expect(resource.$getRequest(params)).toEqual({
+      method: 'get',
+      url: 'http://example.com',
+      params: params,
+      headers: {Accept: 'application/json'}
+    });
+  });
+
   it('delegates HTTP GET request to the context', function () {
     resource.$get();
     expect(mockContext.httpGet).toHaveBeenCalledWith(resource);

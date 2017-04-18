@@ -185,6 +185,12 @@ completes successfully.
       console.log('success!');
     });
 
+The `$get` method can also be called with optional parameters.
+
+**Example**
+
+    // requests 'http://example.com/composer/john?food=pineapple'
+    context.get('http://example.com/composer/john').$get({food: 'pineapple'});
 
 ## PATCH requests: synchronization using JSON Merge Patch
 

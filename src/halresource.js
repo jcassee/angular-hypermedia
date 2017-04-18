@@ -33,14 +33,17 @@ angular.module('hypermedia')
        * Create a $http GET request configuration object.
        *
        * @function
+       * @param {object} [params] additional GET parameters
        * @returns {object}
        */
-      $getRequest: {value: function () {
-        return {
+      $getRequest: {value: function (params) {
+        var config = {
           method: 'get',
           url: this.$uri,
           headers: {'Accept': 'application/hal+json'}
         };
+        if (params) config.params = params;
+        return config;
       }},
 
       /**
