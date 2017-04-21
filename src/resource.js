@@ -221,7 +221,7 @@ angular.module('hypermedia')
        * @see Resource#$syncTime
        */
       $load: {value: function (ts) {
-        if (!this.$syncTime || (ts && this.$syncTime < ts)) {
+        if (this.$context.serveRequestFromCache(this.$uri, ts)) {
           return this.$context.httpGet(this);
         } else {
           return $q.when(this);
